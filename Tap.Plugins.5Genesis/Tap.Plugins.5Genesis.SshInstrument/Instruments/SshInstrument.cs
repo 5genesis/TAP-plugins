@@ -40,6 +40,8 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
         public Enabled<string> Key { get; set; }
        
         #endregion
+
+        public bool SshConnected { get { return (ssh != null && ssh.IsConnected); } }
         
         public SshInstrument()
         {
@@ -49,7 +51,7 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
             Key = new Enabled<string>() { IsEnabled = false, Value = string.Empty };
 
             Rules.Add(() => !string.IsNullOrWhiteSpace(User), "Please select a host", "Host");
-            Rules.Add(() => Port > 0, "Please select a valid port number", "Port");
+            Rules.Add(() => Port > 0 && Port < 65535, "Please select a valid port number", "Port");
             Rules.Add(() => Password.IsEnabled || Key.IsEnabled, "Please select an authentication method", "Password");
             Rules.Add(() => !Password.IsEnabled || !string.IsNullOrWhiteSpace(Password.Value), "Please select a password value", "Password");
             Rules.Add(() => !Key.IsEnabled || !string.IsNullOrWhiteSpace(Key.Value), "Please select a key file", "Key");
@@ -79,19 +81,31 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
 
         public override void Close()
         {
-            ssh.Disconnect();
+            if (this.SshConnected)
+            {
+                ssh.Disconnect();
+                ssh = null;
+            }
             base.Close();
         }
 
         public string Run(string command)
         {
-            if (ssh != null && ssh.IsConnected)
-            {
-                SshCommand c = ssh.CreateCommand(command);
-                string result = c.Execute();
-                return result;
-            }
-            return "Not connected";
+            if (!this.SshConnected) { throw new Exception($"Running '{command}' command while {this.Name} is not connected."); }
+
+            SshCommand c = ssh.CreateCommand(command);
+            string result = c.Execute();
+            return result;
+        }
+
+        public BackgroundSshCommand RunAsync(string command)
+        {
+            if (!this.SshConnected) { throw new Exception($"Running '{command}' command while {this.Name} is not connected."); }
+
+            SshCommand c = ssh.CreateCommand(command);
+            BackgroundSshCommand backgroundCommand = new BackgroundSshCommand(this, c);
+            backgroundCommand.Command.BeginExecute();
+            return backgroundCommand;
         }
     }
 }

@@ -10,23 +10,10 @@ using Keysight.Tap;
 
 namespace Tap.Plugins._5Genesis.SshInstrument.Steps
 {
-    [Display("Run SSH Command", Group: "5Genesis", Description: "Send an ")]
-    public class RunSshCommand : TestStep
+    [Display("Run SSH Command", Group: "5Genesis", Description: "Send a command through an SSH connection")]
+    public class RunSshCommandStep : SshBaseStep
     {
-        #region Settings
-        
-        [Display("Instrument", Group: "Instrument", Order: 1.0)]
-        public Instruments.SshInstrument Instrument { get; set; }
-
-        [Display("Command", Group: "Command", Order: 2.0)]
-        public string Command { get; set; }
-
-        #endregion
-
-        public RunSshCommand() 
-        {
-            Command = "uname -a";
-        }
+        public RunSshCommandStep() { }
 
         public override void Run()
         {
