@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+InfoLink: Specifies a location where additional information about the package can be found.
+Version: The version of the package. This can be automatically updated from GIT.
+Configuration: Can be any kind of information, such as bit version or git branch name. 
+
+For Version and Configuration the following macros are available (Only works if the project directory is under Git source control):
+$(GitVersion) - Gets the version from Git.
+$(GitBranch) - Gets the branch name from Git.
+$(GitBranchVersion) - Gets the version number in the recommended format Major.Minor.Build-PreRelease+CommitHash.BranchName.
+-->
+<Package Name="Main" xmlns="http://keysight.com/schemas/TAP/Package" InfoLink="" Version="0.1.0-alpha">
+  <Description>5Genesis main TAP plugin.</Description>
+  <Files>
+    <File Path="5Genesis\Tap.Plugins.5Genesis.Main.dll" Obfuscate="false" SetAssemblyInfo="Version"></File>
+  </Files>
+</Package>
