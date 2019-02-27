@@ -13,5 +13,7 @@ $(GitBranchVersion) - Gets the version number in the recommended format Major.Mi
   <Description>5Genesis main TAP plugin.</Description>
   <Files>
     <File Path="5Genesis\Tap.Plugins.5Genesis.Main.dll" Obfuscate="false" SetAssemblyInfo="Version"></File>
+    <!-- SSH Instrument-->
+    <File Path="SshInstrument\Tap.Plugins._5Genesis.SshInstrument.dll" Obfuscate="false" SetAssemblyInfo="Version"></File>
   </Files>
 </Package>
