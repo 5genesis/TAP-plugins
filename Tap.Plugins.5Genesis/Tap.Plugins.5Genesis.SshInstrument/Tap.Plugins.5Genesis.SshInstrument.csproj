@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Instruments\SshInstrument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Steps\RunSshCommand.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
