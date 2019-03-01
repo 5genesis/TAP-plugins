@@ -9,6 +9,7 @@
 
 using System;
 using System.ComponentModel;
+using System.IO;
 using Keysight.Tap;
 using Renci.SshNet;
 
@@ -19,6 +20,7 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
     public class SshInstrument : Instrument
     {
         private SshClient ssh = null;
+        private ScpClient scp = null;
 
         #region Settings
 
@@ -75,14 +77,20 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
 
             ConnectionInfo connectionInfo = new ConnectionInfo(Host, Port, User, authentication);
 
-            ssh = new SshClient(connectionInfo) { KeepAliveInterval = new TimeSpan(0, 0, 5) };
+            TimeSpan fiveSecs = new TimeSpan(0, 0, 5);
+            ssh = new SshClient(connectionInfo) { KeepAliveInterval = fiveSecs };
             ssh.Connect();
+
+            scp = new ScpClient(connectionInfo) { KeepAliveInterval = fiveSecs };
+            scp.Connect();
         }
 
         public override void Close()
         {
             if (this.SshConnected)
             {
+                scp.Disconnect();
+                scp = null;
                 ssh.Disconnect();
                 ssh = null;
             }
@@ -106,6 +114,36 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
             BackgroundSshCommand backgroundCommand = new BackgroundSshCommand(this, c);
             backgroundCommand.Command.BeginExecute();
             return backgroundCommand;
+        }
+
+        public void Pull(string source, string target, bool directory = false)
+        {
+            target = Path.GetFullPath(target);
+
+            if (directory)
+            {
+                scp.Download(source, new DirectoryInfo(target));
+            }
+            else
+            {
+                scp.Download(source, new FileInfo(target));
+            }
+        }
+
+        public void Push(string source, string target, bool directory = false)
+        {
+            // Upload is broken on Renci.SshNet 2016.1.0 (breaking change on OpenSSH)
+            // Use version 2016.0.0 for upload support
+            source = Path.GetFullPath(source);
+
+            if (directory)
+            {
+                scp.Upload(new DirectoryInfo(source), target);
+            }
+            else
+            {
+                scp.Upload(new FileInfo(source), target);
+            }
         }
     }
 }

@@ -17,14 +17,8 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
         [Display("Instrument", Group: "Instrument", Order: 0.0)]
         public Instruments.SshInstrument Instrument { get; set; }
 
-        [Display("Command", Group: "Command", Order: 0.1)]
-        public string Command { get; set; }
-
         #endregion
 
-        public SshBaseStep()
-        {
-            Command = "uname -a";
-        }
+        public SshBaseStep() { }
     }
 }

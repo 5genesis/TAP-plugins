@@ -14,7 +14,7 @@ using Tap.Plugins._5Genesis.SshInstrument.Instruments;
 namespace Tap.Plugins._5Genesis.SshInstrument.Steps
 {
     [Display("Run Background SSH Command", Group: "5Genesis", Description: "Start a command through SSH and run it in the background")]
-    public class RunBackgroundSshCommandStep : SshBaseStep
+    public class RunBackgroundSshCommandStep : SshCommandBaseStep
     {
         [Display("Background Command")]
         [Output]
