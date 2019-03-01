@@ -7,6 +7,7 @@
 // This file cannot be modified or redistributed. This header cannot be removed.
 
 using Keysight.Tap;
+using Renci.SshNet;
 
 namespace Tap.Plugins._5Genesis.SshInstrument.Steps
 {
@@ -17,8 +18,8 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
 
         public override void Run()
         {
-            string res = Instrument.Run(Command);
-            Log.Info(res);
+            SshCommand command = Instrument.Run(Command);
+            Log.Info(command.Result);
         }
     }
 }

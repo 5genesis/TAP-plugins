@@ -8,6 +8,7 @@
 
 using Keysight.Tap;
 using System.Xml.Serialization;
+using Renci.SshNet;
 
 using Tap.Plugins._5Genesis.SshInstrument.Instruments;
 
@@ -19,7 +20,7 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
         #region Settings
 
         [Display("Background Command", Order: 1.0)]
-        public Input<BackgroundSshCommand> BackgroundCommandInput { get; set; }
+        public Input<SshCommand> BackgroundCommandInput { get; set; }
 
         #endregion
 
@@ -30,9 +31,9 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
 
         public override void Run()
         {
-            BackgroundSshCommand backgroundCommand = BackgroundCommandInput.Value;
-            backgroundCommand.Command.CancelAsync();
-            Log.Info(backgroundCommand.Command.Result);
+            SshCommand backgroundCommand = BackgroundCommandInput.Value;
+            backgroundCommand.CancelAsync();
+            Log.Info(backgroundCommand.Result);
         }
     }
 }

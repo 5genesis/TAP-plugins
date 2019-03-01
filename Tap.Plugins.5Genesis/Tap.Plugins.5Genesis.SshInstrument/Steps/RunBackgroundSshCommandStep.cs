@@ -8,6 +8,7 @@
 
 using Keysight.Tap;
 using System.Xml.Serialization;
+using Renci.SshNet;
 
 using Tap.Plugins._5Genesis.SshInstrument.Instruments;
 
@@ -19,7 +20,7 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
         [Display("Background Command")]
         [Output]
         [XmlIgnore]
-        public BackgroundSshCommand BackgroundCommand { get; private set; }
+        public SshCommand BackgroundCommand { get; private set; }
 
         public RunBackgroundSshCommandStep() { }
 

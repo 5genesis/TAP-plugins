@@ -97,23 +97,22 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
             base.Close();
         }
 
-        public string Run(string command)
+        public SshCommand Run(string command)
         {
             if (!this.SshConnected) { throw new Exception($"Running '{command}' command while {this.Name} is not connected."); }
 
             SshCommand c = ssh.CreateCommand(command);
-            string result = c.Execute();
-            return result;
+            c.Execute();
+            return c;
         }
 
-        public BackgroundSshCommand RunAsync(string command)
+        public SshCommand RunAsync(string command)
         {
             if (!this.SshConnected) { throw new Exception($"Running '{command}' command while {this.Name} is not connected."); }
 
             SshCommand c = ssh.CreateCommand(command);
-            BackgroundSshCommand backgroundCommand = new BackgroundSshCommand(this, c);
-            backgroundCommand.Command.BeginExecute();
-            return backgroundCommand;
+            c.BeginExecute();
+            return c;
         }
 
         public void Pull(string source, string target, bool directory = false)
