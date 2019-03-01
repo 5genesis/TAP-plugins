@@ -7,6 +7,7 @@
 // This file cannot be modified or redistributed. This header cannot be removed.
 
 using Keysight.Tap;
+using System;
 
 namespace Tap.Plugins._5Genesis.SshInstrument.Steps
 {
@@ -86,18 +87,34 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
             IsFolder = false;
             Direction = DirectionEnum.Pull;
 
-            //RULES
+            string setSource = "Please select a valid source";
+            string setTarget = "Please select a valid target";
+
+            Rules.Add(() => Direction == DirectionEnum.Pull && !string.IsNullOrWhiteSpace(SourceD), setSource, "SourceD");
+            Rules.Add(() => Direction == DirectionEnum.Pull && IsFolder && !string.IsNullOrWhiteSpace(TargetDD), setTarget, "TargetDD");
+            Rules.Add(() => Direction == DirectionEnum.Pull && !IsFolder && !string.IsNullOrWhiteSpace(TargetDF), setTarget, "TargetDF");
+
+            Rules.Add(() => Direction == DirectionEnum.Push && !string.IsNullOrWhiteSpace(TargetU), setTarget, "TargetU");
+            Rules.Add(() => Direction == DirectionEnum.Push && IsFolder && !string.IsNullOrWhiteSpace(SourceUD), setSource, "SourceUD");
+            Rules.Add(() => Direction == DirectionEnum.Push && !IsFolder && !string.IsNullOrWhiteSpace(SourceUF), setSource, "SourceUF");
         }
 
         public override void Run()
         {
-            if (Direction == DirectionEnum.Pull)
+            try
             {
-                Instrument.Pull(Source, Target, IsFolder);
+                if (Direction == DirectionEnum.Pull)
+                {
+                    Instrument.Pull(Source, Target, IsFolder);
+                }
+                else
+                {
+                    Instrument.Push(Source, Target, IsFolder);
+                }
             }
-            else
+            catch (Exception e)
             {
-                Instrument.Push(Source, Target, IsFolder);
+                Log.Error($"Exception while transferring: {e.Message}");
             }
         }
     }
