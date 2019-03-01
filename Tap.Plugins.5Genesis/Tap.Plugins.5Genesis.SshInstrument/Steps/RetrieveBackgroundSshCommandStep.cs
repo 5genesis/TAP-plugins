@@ -31,9 +31,11 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
 
         public override void Run()
         {
+            RunBackgroundSshCommandStep parentStep = (RunBackgroundSshCommandStep)BackgroundCommandInput.Step;
+
             SshCommand backgroundCommand = BackgroundCommandInput.Value;
             backgroundCommand.CancelAsync();
-            Log.Info(backgroundCommand.Result);
+            parentStep.handleExecutionResult(backgroundCommand);
         }
     }
 }

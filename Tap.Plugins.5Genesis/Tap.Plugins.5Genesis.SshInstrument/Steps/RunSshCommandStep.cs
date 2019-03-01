@@ -19,7 +19,7 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
         public override void Run()
         {
             SshCommand command = Instrument.Run(Command);
-            Log.Info(command.Result);
+            handleExecutionResult(command);
         }
     }
 }
