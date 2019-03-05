@@ -50,13 +50,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Instruments\BackgroundSshCommand.cs" />
     <Compile Include="Instruments\SshInstrument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Steps\RetrieveBackgroundSshCommandStep.cs" />
-    <Compile Include="Steps\RunBackgroundSshCommandStep.cs" />
     <Compile Include="Steps\ScpTransferStep.cs" />
-    <Compile Include="Steps\RunSshCommandStep.cs" />
-    <Compile Include="Steps\SshCommandBaseStep.cs" />
+    <Compile Include="Steps\SshCommandStep.cs" />
     <Compile Include="Steps\SshBaseStep.cs" />
   </ItemGroup>
   <ItemGroup>

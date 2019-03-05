@@ -6,20 +6,15 @@
 //
 // This file cannot be modified or redistributed. This header cannot be removed.
 
-using Keysight.Tap;
+
 using Renci.SshNet;
+using System;
 
-namespace Tap.Plugins._5Genesis.SshInstrument.Steps
+namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
 {
-    [Display("Run SSH Command", Group: "5Genesis", Description: "Send a command through an SSH connection")]
-    public class RunSshCommandStep : SshCommandBaseStep
+    public class BackgroundSshCommand
     {
-        public RunSshCommandStep() { }
-
-        public override void Run()
-        {
-            SshCommand command = Instrument.Run(Command);
-            handleExecutionResult(command);
-        }
+        public IAsyncResult AsyncResult { get; set; }
+        public SshCommand Command { get; set; }
     }
 }

@@ -20,22 +20,40 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
         #region Settings
 
         [Display("Background Command", Order: 1.0)]
-        public Input<SshCommand> BackgroundCommandInput { get; set; }
+        public Input<BackgroundSshCommand> BackgroundCommandInput { get; set; }
+
+        [Display("Wait for completion", Order: 1.1, 
+            Description: "If true, wait for the command to end or the timeout to be reached.\n" + 
+                         "Otherwise cancel the execution on this step.")]
+        public bool Wait { get; set; }
 
         #endregion
 
         public RetrieveBackgroundSshCommandStep() {
+            Wait = true;
+
             Rules.Add(() => (BackgroundCommandInput != null), "Please select a background command.", "BackgroundCommandInput");
+            Rules.Add(() => 
+                (BackgroundCommandInput == null || ((SshCommandStep)BackgroundCommandInput.Step).Background == true), 
+                "Selected command is not configured to run in background", "BackgroundCommandInput"
+            );
         }
         
-
         public override void Run()
         {
-            RunBackgroundSshCommandStep parentStep = (RunBackgroundSshCommandStep)BackgroundCommandInput.Step;
+            SshCommandStep parentStep = (SshCommandStep)BackgroundCommandInput.Step;
+            BackgroundSshCommand backgroundCommand = BackgroundCommandInput.Value;
 
-            SshCommand backgroundCommand = BackgroundCommandInput.Value;
-            backgroundCommand.CancelAsync();
-            parentStep.handleExecutionResult(backgroundCommand);
+            if (Wait)
+            {
+                backgroundCommand.Command.EndExecute(backgroundCommand.AsyncResult);
+            }
+            else
+            {
+                backgroundCommand.Command.CancelAsync();
+            }
+
+            parentStep.handleExecutionResult(backgroundCommand.Command);
         }
     }
 }

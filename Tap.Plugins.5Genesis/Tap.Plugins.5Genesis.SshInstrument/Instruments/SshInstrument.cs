@@ -6,7 +6,6 @@
 //
 // This file cannot be modified or redistributed. This header cannot be removed.
 
-
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -97,22 +96,27 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
             base.Close();
         }
 
-        public SshCommand Run(string command)
+        private SshCommand makeSshCommand(string command, int? timeout = null)
         {
             if (!this.SshConnected) { throw new Exception($"Running '{command}' command while {this.Name} is not connected."); }
 
             SshCommand c = ssh.CreateCommand(command);
+            if (timeout.HasValue) { c.CommandTimeout = new TimeSpan(0,0, timeout.Value); }
+            return c;
+        }
+
+        public SshCommand Run(string command)
+        {
+            SshCommand c = makeSshCommand(command);
             c.Execute();
             return c;
         }
 
-        public SshCommand RunAsync(string command)
+        public BackgroundSshCommand RunAsync(string command)
         {
-            if (!this.SshConnected) { throw new Exception($"Running '{command}' command while {this.Name} is not connected."); }
-
-            SshCommand c = ssh.CreateCommand(command);
-            c.BeginExecute();
-            return c;
+            SshCommand c = makeSshCommand(command);
+            IAsyncResult r = c.BeginExecute();
+            return new BackgroundSshCommand() { AsyncResult = r, Command = c };
         }
 
         public void Pull(string source, string target, bool directory = false)
