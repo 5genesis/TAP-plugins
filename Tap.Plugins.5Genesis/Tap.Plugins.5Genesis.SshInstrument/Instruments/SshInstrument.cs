@@ -96,7 +96,7 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
             base.Close();
         }
 
-        private SshCommand makeSshCommand(string command, int? timeout = null)
+        public SshCommand MakeSshCommand(string command, int? timeout = null)
         {
             if (!this.SshConnected) { throw new Exception($"Running '{command}' command while {this.Name} is not connected."); }
 
@@ -107,16 +107,24 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
 
         public SshCommand Run(string command)
         {
-            SshCommand c = makeSshCommand(command);
-            c.Execute();
-            return c;
+            return Run(MakeSshCommand(command));
+        }
+
+        public SshCommand Run(SshCommand command)
+        {
+            command.Execute();
+            return command;
         }
 
         public BackgroundSshCommand RunAsync(string command)
         {
-            SshCommand c = makeSshCommand(command);
-            IAsyncResult r = c.BeginExecute();
-            return new BackgroundSshCommand() { AsyncResult = r, Command = c };
+            return RunAsync(MakeSshCommand(command));
+        }
+
+        public BackgroundSshCommand RunAsync(SshCommand command)
+        {
+            IAsyncResult result = command.BeginExecute();
+            return new BackgroundSshCommand() { AsyncResult = result, Command = command };
         }
 
         public void Pull(string source, string target, bool directory = false)

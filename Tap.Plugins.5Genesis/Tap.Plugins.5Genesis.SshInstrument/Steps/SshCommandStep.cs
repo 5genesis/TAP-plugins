@@ -8,6 +8,7 @@
 
 using Keysight.Tap;
 using Renci.SshNet;
+using System;
 using System.Xml.Serialization;
 using Tap.Plugins._5Genesis.SshInstrument.Instruments;
 
@@ -19,7 +20,6 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
         #region Settings
 
         [Display("Command", Group: "Command", Order: 0.1)]
-        [EnabledIf("displayCommand", true, HideIfDisabled = true)]
         public string Command { get; set; }
 
         [Display("Run in background", Group: "Command", Order: 0.2)]
@@ -29,6 +29,21 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
         [Unit("Seconds")]
         public Enabled<int> Timeout { get; set; }
 
+        [Display("Log output", Group: "Output", Order: 1.0,
+                Description: "Display output of command on log.")]
+        public bool LogOutput { get; set; }
+
+        [Display("Log errors", Group: "Output", Order: 1.1,
+                Description: "Display errors of command on log.")]
+        public bool LogError { get; set; }
+
+        [Display("Error verdict", Group: "Step Verdict", Order: 2.0)]
+        public Enabled<Verdict> ErrorVerdict { get; set; }
+
+        [Display("Expected exit code", Group: "Step Verdict", Order: 2.1,
+                Description: "Step verdict will be 'Pass' if exit code is equal to this\n" +
+                             "value, otherwise use the selected Error verdict")]
+        public int ExpectedCode { get; set; }
 
         #endregion
 
@@ -42,24 +57,62 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
             Command = "uname -a";
             Background = false;
             Timeout = new Enabled<int>() { IsEnabled = false, Value = 60 };
+            LogOutput = false;
+            LogError = true;
+            ErrorVerdict = new Enabled<Verdict>() { IsEnabled = true, Value = Verdict.Error };
+            ExpectedCode = 0;
         }
 
         public override void Run()
         {
+            SshCommand command = Instrument.MakeSshCommand(Command, Timeout.IsEnabled ? Timeout.Value : (int?)null);
+
             if (Background)
             {
-                BackgroundCommand = Instrument.RunAsync(Command);
+                BackgroundCommand = Instrument.RunAsync(command);
             }
             else
             {
-                SshCommand command = Instrument.Run(Command);
+                Instrument.Run(command);
                 handleExecutionResult(command);
             }
         }
 
         internal void handleExecutionResult(SshCommand command)
         {
-            Log.Info(command.Result);
+            Log.Info($"Command <{command.CommandText}> finished with status code: {command.ExitStatus}");
+
+            if (LogOutput) {
+                Log.Info("Command output:");
+                logLines(command.Result);
+                Log.Info("----------------------------------------");
+            }
+
+            if (LogError && command.Error.Length != 0) {
+                Log.Error("Command error output:");
+                logLines(command.Error);
+                Log.Error("----------------------------------------");
+            }
+
+            if (ExpectedCode == command.ExitStatus)
+            {
+                UpgradeVerdict(Verdict.Pass);
+            }
+            else if (ErrorVerdict.IsEnabled)
+            {
+                UpgradeVerdict(ErrorVerdict.Value);
+            }
+        }
+
+        internal void logLines(string text, bool error = false)
+        {
+            string[] lines = text.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+
+            foreach (string line in lines)
+            {
+                if (error) { Log.Error(line); }
+                else { Log.Error(line); }
+            }
         }
     }
 }
