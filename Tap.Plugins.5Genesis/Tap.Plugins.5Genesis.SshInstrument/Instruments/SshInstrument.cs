@@ -117,10 +117,9 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
             return command;
         }
 
-        public string Sudo(string command, string terminal = "bash", string passwordPrompt = "password", string shellPrompt = ":~$", bool regex = false, int timeout = 60)
+        public string Sudo(string command, string terminal = "bash", string passwordPrompt = "password", string shellPrompt = ":~$", bool regex = false, int? timeout = null)
         {
             string output;
-            TimeSpan timespan = new TimeSpan(0, 0, timeout);
 
             using (ShellStream shell = ssh.CreateShellStream(terminal, 255, 50, 800, 600, 1024))
             {
@@ -130,7 +129,15 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
                 if (output != null) // Timeout was not reached, fill password and continue until shell prompt
                 {
                     shell.Write($"{Password.Value.GetString()}\n");
-                    output = regex ? shell.Expect(new Regex(shellPrompt), timespan) : shell.Expect(shellPrompt, timespan);
+                    if (timeout.HasValue)
+                    {
+                        TimeSpan timespan = new TimeSpan(0, 0, timeout.Value);
+                        output = regex ? shell.Expect(new Regex(shellPrompt), timespan) : shell.Expect(shellPrompt, timespan);
+                    }
+                    else
+                    {
+                        output = regex ? shell.Expect(new Regex(shellPrompt)) : shell.Expect(shellPrompt);
+                    }
                 }
             }
             return output;
