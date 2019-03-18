@@ -9,6 +9,7 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Security;
 using Keysight.Tap;
 using Renci.SshNet;
 
@@ -33,8 +34,7 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
         public string User { get; set; }
 
         [Display("Password/Passphrase", Group: "Credentials", Order: 1.2)]
-        [PasswordPropertyText]
-        public Enabled<string> Password { get; set; }
+        public Enabled<SecureString> Password { get; set; }
 
         [Display("Private Key", Group: "Credentials", Order: 1.3)]
         [FilePath(FilePathAttribute.BehaviorChoice.Open)]
@@ -48,13 +48,13 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
         {
             Host = User = string.Empty;
             Port = 22;
-            Password = new Enabled<string>() { IsEnabled = true, Value = string.Empty };
+            Password = new Enabled<SecureString>() { IsEnabled = true };
             Key = new Enabled<string>() { IsEnabled = false, Value = string.Empty };
 
             Rules.Add(() => !string.IsNullOrWhiteSpace(User), "Please select a host", "Host");
             Rules.Add(() => Port > 0 && Port < 65535, "Please select a valid port number", "Port");
             Rules.Add(() => Password.IsEnabled || Key.IsEnabled, "Please select an authentication method", "Password");
-            Rules.Add(() => !Password.IsEnabled || !string.IsNullOrWhiteSpace(Password.Value), "Please select a password value", "Password");
+            Rules.Add(() => !Password.IsEnabled || Password.Value.Length > 0, "Please select a password value", "Password");
             Rules.Add(() => !Key.IsEnabled || !string.IsNullOrWhiteSpace(Key.Value), "Please select a key file", "Key");
             Rules.Add(() => !string.IsNullOrWhiteSpace(User), "Please select an user name", "User");
         }
@@ -66,12 +66,12 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
 
             if (Key.IsEnabled)
             {
-                PrivateKeyFile privateKey = Password.IsEnabled ? new PrivateKeyFile(Key.Value, Password.Value) : new PrivateKeyFile(Key.Value);
+                PrivateKeyFile privateKey = Password.IsEnabled ? new PrivateKeyFile(Key.Value, Password.Value.GetString()) : new PrivateKeyFile(Key.Value);
                 authentication = new PrivateKeyAuthenticationMethod(User, new PrivateKeyFile[] { privateKey });
             }
             else
             {
-                authentication = new PasswordAuthenticationMethod(User, Password.Value);
+                authentication = new PasswordAuthenticationMethod(User, Password.Value.GetString());
             }
 
             ConnectionInfo connectionInfo = new ConnectionInfo(Host, Port, User, authentication);
