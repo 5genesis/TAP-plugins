@@ -10,6 +10,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Security;
+using System.Text.RegularExpressions;
 using Keysight.Tap;
 using Renci.SshNet;
 
@@ -19,6 +20,7 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
     [ShortName("SSH")]
     public class SshInstrument : Instrument
     {
+        private static TimeSpan fiveSecs = new TimeSpan(0, 0, 5);
         private SshClient ssh = null;
         private ScpClient scp = null;
 
@@ -75,8 +77,7 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
             }
 
             ConnectionInfo connectionInfo = new ConnectionInfo(Host, Port, User, authentication);
-
-            TimeSpan fiveSecs = new TimeSpan(0, 0, 5);
+            
             ssh = new SshClient(connectionInfo) { KeepAliveInterval = fiveSecs };
             ssh.Connect();
 
@@ -114,6 +115,25 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
         {
             command.Execute();
             return command;
+        }
+
+        public string Sudo(string command, string terminal = "bash", string passwordPrompt = "password", string shellPrompt = ":~$", bool regex = false, int timeout = 60)
+        {
+            string output;
+            TimeSpan timespan = new TimeSpan(0, 0, timeout);
+
+            using (ShellStream shell = ssh.CreateShellStream(terminal, 255, 50, 800, 600, 1024))
+            {
+                shell.Write($"sudo {command}\n");
+                output = regex ? shell.Expect(new Regex(passwordPrompt), fiveSecs) : shell.Expect(passwordPrompt, fiveSecs);
+
+                if (output != null) // Timeout was not reached, fill password and continue until shell prompt
+                {
+                    shell.Write($"{Password.Value.GetString()}\n");
+                    output = regex ? shell.Expect(new Regex(shellPrompt), timespan) : shell.Expect(shellPrompt, timespan);
+                }
+            }
+            return output;
         }
 
         public BackgroundSshCommand RunAsync(string command)
