@@ -90,7 +90,7 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
 
             if (LogError && command.Error.Length != 0) {
                 Log.Error("Command error output:");
-                logLines(command.Error);
+                logLines(command.Error, error: true);
                 Log.Error("----------------------------------------");
             }
 
@@ -111,7 +111,7 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
             foreach (string line in lines)
             {
                 if (error) { Log.Error(line); }
-                else { Log.Error(line); }
+                else { Log.Info(line); }
             }
         }
     }
