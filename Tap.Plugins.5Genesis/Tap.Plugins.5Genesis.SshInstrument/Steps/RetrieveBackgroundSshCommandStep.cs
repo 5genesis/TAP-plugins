@@ -35,8 +35,10 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
             Rules.Add(() => (BackgroundCommandInput != null), "Please select a background command.", "BackgroundCommandInput");
             Rules.Add(() => 
                 (BackgroundCommandInput == null || ((SshCommandStep)BackgroundCommandInput.Step).Background == true), 
-                "Selected command is not configured to run in background", "BackgroundCommandInput"
-            );
+                "Selected command is not configured to run in background", "BackgroundCommandInput");
+            Rules.Add(() =>
+                (BackgroundCommandInput == null || ((SshCommandStep)BackgroundCommandInput.Step).Sudo == false),
+                "Commands run as SU cannot be executed in the background", "BackgroundCommandInput");
         }
         
         public override void Run()

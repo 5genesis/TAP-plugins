@@ -139,6 +139,10 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
                         output = regex ? shell.Expect(new Regex(shellPrompt)) : shell.Expect(shellPrompt);
                     }
                 }
+                else
+                {
+                    Log.Error("Timeout (5 seconds) reached before password prompt.");
+                }
             }
             return output;
         }
