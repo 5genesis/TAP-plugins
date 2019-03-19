@@ -116,16 +116,7 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Steps
         {
             if (Sudo)
             {
-                string output = Instrument.Sudo(Command, Terminal, PasswordPrompt, ShellPrompt, PromptRegex, Timeout.IsEnabled ? Timeout.Value : (int?)null);
-
-                if (output == null)
-                {
-                    Log.Error($"Timeout reached for command '{Command}'");
-                }
-                else if (LogOutput)
-                {
-                    logLines(output);
-                }
+                string output = Instrument.Sudo(Command, Terminal, PasswordPrompt, ShellPrompt, PromptRegex, Timeout.IsEnabled ? Timeout.Value : (int?)null, LogOutput);
             }
             else
             {

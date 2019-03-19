@@ -10,6 +10,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Security;
+using System.Text;
 using System.Text.RegularExpressions;
 using Keysight.Tap;
 using Renci.SshNet;
@@ -117,7 +118,8 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
             return command;
         }
 
-        public string Sudo(string command, string terminal = "bash", string passwordPrompt = "password", string shellPrompt = ":~$", bool regex = false, int? timeout = null)
+        public string Sudo(string command, string terminal = "bash", string passwordPrompt = "password", string shellPrompt = ":~$", 
+                           bool regex = false, int? timeout = null, bool logOutput = true)
         {
             string output;
 
@@ -129,15 +131,31 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
                 if (output != null) // Timeout was not reached, fill password and continue until shell prompt
                 {
                     shell.Write($"{Password.Value.GetString()}\n");
-                    if (timeout.HasValue)
+
+                    string line;
+                    Regex shellRegex = new Regex(shellPrompt);
+                    DateTime start = DateTime.Now;
+                    TimeSpan limit = new TimeSpan(0, 0, timeout.Value);
+                    StringBuilder builder = new StringBuilder();
+
+                    while ((line = shell.ReadLine(limit)) != null) // Set the timeout as a hard limit in case there is no output
                     {
-                        TimeSpan timespan = new TimeSpan(0, 0, timeout.Value);
-                        output = regex ? shell.Expect(new Regex(shellPrompt), timespan) : shell.Expect(shellPrompt, timespan);
+                        builder.Append(line);
+                        if (logOutput) Log.Info(line);
+
+                        // Break if we find the shell prompt
+                        if (!regex && line.Contains(shellPrompt)) break;
+                        if (regex && shellRegex.IsMatch(line)) break;
+
+                        // Break if we reach the timeout.
+                        if (timeout.HasValue)
+                        {
+                            TimeSpan elapsed = DateTime.Now - start;
+                            if (elapsed >= limit) break;
+                        }
                     }
-                    else
-                    {
-                        output = regex ? shell.Expect(new Regex(shellPrompt)) : shell.Expect(shellPrompt);
-                    }
+
+                    output = builder.ToString();
                 }
                 else
                 {
