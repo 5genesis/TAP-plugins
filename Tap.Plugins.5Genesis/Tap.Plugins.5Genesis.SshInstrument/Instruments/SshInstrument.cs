@@ -17,6 +17,13 @@ using Renci.SshNet;
 
 namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
 {
+    /// <summary>
+    /// Base SSH Instrument. Provides methods for executing remote commands (<see cref="Run(SshCommand)"/>, 
+    /// <see cref="RunAsync(SshCommand)"/>, <see cref="Sudo(string, string, string, string, bool, int?, bool)"/>) 
+    /// and for sending (<see cref="Push(string, string, bool)"/>) and retrieving (<see cref="Pull(string, string, bool)"/>)
+    /// files and folders.
+    /// <remark>Sudo commands are run using a terminal session, and cannot be run in the background at the moment.</remark>
+    /// </summary>
     [Display("SshInstrument", Group: "5Genesis", Description: "Basic SSH instrument")]
     [ShortName("SSH")]
     public class SshInstrument : Instrument
@@ -45,7 +52,10 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
        
         #endregion
 
-        public bool SshConnected { get { return (ssh != null && ssh.IsConnected); } }
+        /// <summary>
+        /// Returns true if the instrument has been opened.
+        /// </summary>
+        public bool SshConnected { get { return (ssh != null && ssh.IsConnected) && (scp != null && scp.IsConnected); } }
         
         public SshInstrument()
         {
@@ -98,29 +108,55 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
             base.Close();
         }
 
+        /// <summary>
+        /// Generates a <see cref="SshCommand"/> instance.
+        /// </summary>
+        /// <param name="command">Command to execute</param>
+        /// <param name="timeout">Optional timeout in seconds</param>
+        /// <returns>A ready to use <see cref="SshCommand"/> instance.</returns>
         public SshCommand MakeSshCommand(string command, int? timeout = null)
         {
             if (!this.SshConnected) { throw new Exception($"Running '{command}' command while {this.Name} is not connected."); }
-
+            
             SshCommand c = ssh.CreateCommand(command);
             if (timeout.HasValue) { c.CommandTimeout = new TimeSpan(0,0, timeout.Value); }
             return c;
         }
 
+        /// <summary>
+        /// Executes the specified command in the foreground.
+        /// </summary>
         public SshCommand Run(string command)
         {
             return Run(MakeSshCommand(command));
         }
 
+        /// <summary>
+        /// Executes the specified command in the foreground.
+        /// </summary>
         public SshCommand Run(SshCommand command)
         {
             command.Execute();
             return command;
         }
 
+        /// <summary>
+        /// Executes the specified command as administrator in the foreground. This method runs the command inside a terminal session, 
+        /// and must parse the contents of the standard output in order to handle the execution.
+        /// </summary>
+        /// <param name="command">The command to run</param>
+        /// <param name="terminal">Shell</param>
+        /// <param name="passwordPrompt">String/Regex to parse in order to detect the password prompt.</param>
+        /// <param name="shellPrompt">String/Regex to parse in order to detect the end of the command execution.</param>
+        /// <param name="regex">True if prompts are defined as regular expressions, false if strings.</param>
+        /// <param name="timeout">Optional timeout value in seconds.</param>
+        /// <param name="logOutput">True to display the contents of the output in TAP's log.</param>
+        /// <returns>A newline separated string containing the output/errors of the command</returns>
         public string Sudo(string command, string terminal = "bash", string passwordPrompt = "password", string shellPrompt = ":~$", 
                            bool regex = false, int? timeout = null, bool logOutput = true)
         {
+            if (!this.SshConnected) { throw new Exception($"Running '{command}' command while {this.Name} is not connected."); }
+
             string output;
 
             using (ShellStream shell = ssh.CreateShellStream(terminal, 255, 50, 800, 600, 1024))
@@ -165,17 +201,31 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
             return output;
         }
 
+        /// <summary>
+        /// Executes the specified command in the background. The returned <see cref="BackgroundSshCommand"/> 
+        /// instance can be used to recover the execution results.
+        /// </summary>
         public BackgroundSshCommand RunAsync(string command)
         {
             return RunAsync(MakeSshCommand(command));
         }
 
+        /// <summary>
+        /// Executes the specified command in the background. The returned <see cref="BackgroundSshCommand"/> 
+        /// instance can be used to recover the execution results.
+        /// </summary>
         public BackgroundSshCommand RunAsync(SshCommand command)
         {
             IAsyncResult result = command.BeginExecute();
             return new BackgroundSshCommand() { AsyncResult = result, Command = command };
         }
 
+        /// <summary>
+        /// Retrieves the file/folder specified by <paramref name="source"/>, and saves them into <paramref name="target"/>.
+        /// </summary>
+        /// <param name="source">File or folder path to retrieve (in the remote machine)</param>
+        /// <param name="target">File or folder path where saving the contents in the local machine</param>
+        /// <param name="directory">True if transfering folders, false if transferring files</param>
         public void Pull(string source, string target, bool directory = false)
         {
             target = Path.GetFullPath(target);
@@ -190,6 +240,12 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
             }
         }
 
+        /// <summary>
+        /// Sends the file/folder specified by <paramref name="source"/>, and saves them into <paramref name="target"/>.
+        /// </summary>
+        /// <param name="source">File or folder path to send (in the local machine)</param>
+        /// <param name="target">File or folder path where saving the contents in the remote machine</param>
+        /// <param name="directory">True if transfering folders, false if transferring files</param>
         public void Push(string source, string target, bool directory = false)
         {
             // Upload is broken on Renci.SshNet 2016.1.0 (breaking change on OpenSSH)
