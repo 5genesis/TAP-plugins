@@ -169,9 +169,9 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
                     shell.Write($"{Password.Value.GetString()}\n");
 
                     string line;
-                    Regex shellRegex = new Regex(shellPrompt);
+                    Regex shellRegex = regex ? new Regex(shellPrompt) : null;
                     DateTime start = DateTime.Now;
-                    TimeSpan limit = new TimeSpan(0, 0, timeout.Value);
+                    TimeSpan limit = timeout.HasValue ? new TimeSpan(0, 0, timeout.Value) : fiveSecs;
                     StringBuilder builder = new StringBuilder();
 
                     while ((line = shell.ReadLine(limit)) != null) // Set the timeout as a hard limit in case there is no output

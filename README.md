@@ -22,7 +22,7 @@ All new files to package must be included in the `package.xml` file of the *Main
 
 ### Tap.Plugins.5Genesis.SshInstrument
 
-Provides functionality for sending commands through SSH and transfering files/folders from the remote machine using SCP.
+Provides functionality for sending commands through SSH and transfering files/folders from the remote machine using SCP. Usage samples can be found at `(TAPPath)/5Genesis/Samples/SSH_Sample.TapPlan`.
 
 ## Authors
 

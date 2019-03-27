@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TestPlan type="Keysight.Tap.TestPlan" Locked="False" Version="8.3.251.0">
+  <Steps>
+    <TestStep type="Keysight.Tap.Plugins.BasicSteps.SequenceStep" Id="6f0846dc-5fe7-463b-9c2a-2464018294e9" Version="8.3.251.0">
+      <ChildTestSteps>
+        <TestStep type="Tap.Plugins._5Genesis.SshInstrument.Steps.SshCommandStep" Id="7a44cdf2-f040-4b48-82ff-373a65f6b755" Version="0.0.0.0">
+          <Background>False</Background>
+          <ChildTestSteps />
+          <Command>uname -a</Command>
+          <Enabled>True</Enabled>
+          <ErrorVerdict>
+            <IsEnabled>True</IsEnabled>
+            <Value>Error</Value>
+          </ErrorVerdict>
+          <ExpectedCode>0</ExpectedCode>
+          <Instrument Source="Keysight.Tap.InstrumentSettings">SSH</Instrument>
+          <LogError>True</LogError>
+          <LogOutput>True</LogOutput>
+          <Name>Run SSH Command</Name>
+          <PasswordPrompt>password</PasswordPrompt>
+          <PromptRegex>False</PromptRegex>
+          <ShellPrompt>:~$</ShellPrompt>
+          <Sudo>False</Sudo>
+          <Terminal>bash</Terminal>
+          <Timeout>
+            <IsEnabled>False</IsEnabled>
+            <Value>60</Value>
+          </Timeout>
+        </TestStep>
+      </ChildTestSteps>
+      <Enabled>True</Enabled>
+      <Name>Foreground command</Name>
+    </TestStep>
+    <TestStep type="Keysight.Tap.Plugins.BasicSteps.SequenceStep" Id="530d1648-5ea2-468c-9db6-1178dd050a46" Version="8.3.251.0">
+      <ChildTestSteps>
+        <TestStep type="Tap.Plugins._5Genesis.SshInstrument.Steps.SshCommandStep" Id="0d663b45-6e58-41fc-b2c6-b315fbe896d5" Version="0.0.0.0">
+          <Background>True</Background>
+          <ChildTestSteps />
+          <Command>ping 8.8.8.8</Command>
+          <Enabled>True</Enabled>
+          <ErrorVerdict>
+            <IsEnabled>True</IsEnabled>
+            <Value>Error</Value>
+          </ErrorVerdict>
+          <ExpectedCode>0</ExpectedCode>
+          <Instrument Source="Keysight.Tap.InstrumentSettings">SSH</Instrument>
+          <LogError>True</LogError>
+          <LogOutput>True</LogOutput>
+          <Name>Run SSH Command</Name>
+          <PasswordPrompt>password</PasswordPrompt>
+          <PromptRegex>False</PromptRegex>
+          <ShellPrompt>:~$</ShellPrompt>
+          <Sudo>False</Sudo>
+          <Terminal>bash</Terminal>
+          <Timeout>
+            <IsEnabled>False</IsEnabled>
+            <Value>10</Value>
+          </Timeout>
+        </TestStep>
+        <TestStep type="Keysight.Tap.Plugins.BasicSteps.DelayStep" Id="3cb119c2-d255-4a73-a2d0-c79b858096f2" Version="8.3.251.0">
+          <ChildTestSteps />
+          <DelaySecs>10</DelaySecs>
+          <Enabled>True</Enabled>
+          <Name>Delay</Name>
+        </TestStep>
+        <TestStep type="Tap.Plugins._5Genesis.SshInstrument.Steps.RetrieveBackgroundSshCommandStep" Id="60638f40-0563-484d-a34f-09525e8591e1" Version="0.0.0.0">
+          <BackgroundCommandInput>
+            <PropertyName>Tap.Plugins._5Genesis.SshInstrument.Steps.SshCommandStep, Tap.Plugins.5Genesis.SshInstrument, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null|BackgroundCommand</PropertyName>
+            <Step type="Tap.Plugins._5Genesis.SshInstrument.Steps.SshCommandStep">0d663b45-6e58-41fc-b2c6-b315fbe896d5</Step>
+          </BackgroundCommandInput>
+          <ChildTestSteps />
+          <Enabled>True</Enabled>
+          <Name>Retrieve Background SSH Command</Name>
+          <Wait>False</Wait>
+        </TestStep>
+      </ChildTestSteps>
+      <Enabled>True</Enabled>
+      <Name>Background command</Name>
+    </TestStep>
+    <TestStep type="Keysight.Tap.Plugins.BasicSteps.SequenceStep" Id="0690ee16-4971-40ee-ad62-b7863a5b7e76" Version="8.3.251.0">
+      <ChildTestSteps>
+        <TestStep type="Tap.Plugins._5Genesis.SshInstrument.Steps.SshCommandStep" Id="421e577e-6621-4bc8-8848-dde14c3f2149" Version="0.0.0.0">
+          <Background>False</Background>
+          <ChildTestSteps />
+          <Command>iptables -L -n</Command>
+          <Enabled>True</Enabled>
+          <ErrorVerdict>
+            <IsEnabled>True</IsEnabled>
+            <Value>Error</Value>
+          </ErrorVerdict>
+          <ExpectedCode>0</ExpectedCode>
+          <Instrument Source="Keysight.Tap.InstrumentSettings">SSH</Instrument>
+          <LogError>True</LogError>
+          <LogOutput>True</LogOutput>
+          <Name>Run SSH Command</Name>
+          <PasswordPrompt>password</PasswordPrompt>
+          <PromptRegex>False</PromptRegex>
+          <ShellPrompt>:~$</ShellPrompt>
+          <Sudo>True</Sudo>
+          <Terminal>bash</Terminal>
+          <Timeout>
+            <IsEnabled>False</IsEnabled>
+            <Value>60</Value>
+          </Timeout>
+        </TestStep>
+      </ChildTestSteps>
+      <Enabled>True</Enabled>
+      <Name>Sudo</Name>
+    </TestStep>
+  </Steps>
+</TestPlan>
