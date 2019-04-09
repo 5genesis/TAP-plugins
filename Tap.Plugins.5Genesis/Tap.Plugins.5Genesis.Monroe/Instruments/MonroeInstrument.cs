@@ -37,6 +37,9 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
         {
             Host = "127.0.0.1";
             Port = 8080;
+
+            Rules.Add(() => (!string.IsNullOrWhiteSpace(Host)), "Please select an IP Address", "Host");
+            Rules.Add(() => (Port > 0), "Please select a valid port number", "Port");
         }
 
         public override void Open()
@@ -51,13 +54,13 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
             base.Close();
         }
 
-        public RestResponse Send(string resource, Method method, object body)
+        public IRestResponse<MonroeReply> Send(string resource, Method method, object body)
         {
             RestRequest request = new RestRequest(resource, method, DataFormat.Json);
             request.AddHeader("Content-Type", "application/json");
             request.AddJsonBody(body);
 
-            return (RestResponse)client.Execute(request, method);
+            return client.Execute<MonroeReply>(request, method);
         }
     }
 }
