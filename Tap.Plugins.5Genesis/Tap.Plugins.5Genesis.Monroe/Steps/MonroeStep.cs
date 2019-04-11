@@ -16,12 +16,11 @@ using System.ComponentModel;
 using Keysight.Tap;
 using RestSharp;
 
-
 using Tap.Plugins._5Genesis.Monroe.Instruments;
 
 namespace Tap.Plugins._5Genesis.Monroe.Steps
 {
-    [Display("MonroeStep", Group: "5Genesis", Description: "Insert a description here")]
+    [Display("MONROE", Group: "5Genesis")]
     public class MonroeStep : TestStep
     {
         #region Settings
@@ -62,6 +61,11 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
             InterfaceWithourMetadata = "eth0";
             Options = "{\"server\":\"8.8.8.8\"}";
             Duration = 30;
+
+            Rules.Add(() => (!string.IsNullOrWhiteSpace(Script)), "Script field is not present.", "Script");
+            Rules.Add(() => (!string.IsNullOrWhiteSpace(InterfaceName)), "Interface name field is not present.", "InterfaceName");
+            Rules.Add(() => (!string.IsNullOrWhiteSpace(InterfaceWithourMetadata)), "Interface without metadata field is not present.", "InterfaceWithourMetadata");
+            Rules.Add(() => (!string.IsNullOrWhiteSpace(Options)), "Option field string not in JSON format.", "Options");
         }
 
         public override void Run()
