@@ -15,6 +15,7 @@ using System.Text;
 using System.ComponentModel;
 using Keysight.Tap;
 using RestSharp;
+using Newtonsoft.Json;
 
 using Tap.Plugins._5Genesis.Monroe.Instruments;
 
@@ -65,23 +66,27 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
             Rules.Add(() => (!string.IsNullOrWhiteSpace(Script)), "Script field is not present.", "Script");
             Rules.Add(() => (!string.IsNullOrWhiteSpace(InterfaceName)), "Interface name field is not present.", "InterfaceName");
             Rules.Add(() => (!string.IsNullOrWhiteSpace(InterfaceWithourMetadata)), "Interface without metadata field is not present.", "InterfaceWithourMetadata");
-            Rules.Add(() => (!string.IsNullOrWhiteSpace(Options)), "Option field string not in JSON format.", "Options");
+            Rules.Add(() => (!string.IsNullOrWhiteSpace(Options)), "Option field field is not present.", "Options");
         }
 
         public override void Run()
         {
-            object config = new {
-                config = new {
-                    script = this.Script,
-                    start = this.Start.ToString(),
-                    storage = this.Storage.ToString(),
-                    interfacename = this.InterfaceName,
-                    interface_without_metadata = new List<string> { this.InterfaceWithourMetadata }
-                },
-                duration = this.Duration
+            Dictionary<string, object> config = new Dictionary<string, object>
+            {
+                ["script"] = this.Script,
+                ["start"] = this.Start.ToString(),
+                ["storage"] = this.Storage.ToString(),
+                ["interfacename"] = this.InterfaceName,
+                ["interface_without_metadata"] = new List<string> { this.InterfaceWithourMetadata }
             };
 
-            IRestResponse<MonroeReply> response = Instrument.Send("experiment/324/json", Method.POST, config);
+            dynamic json = JsonConvert.DeserializeObject(Options);
+            foreach (var item in json)
+            {
+                config.Add(item.Name, item.Value);
+            }
+
+            IRestResponse<MonroeReply> response = Instrument.SendToAgent(JsonConvert.SerializeObject(config), Duration);
             MonroeReply reply = response.Data;
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
@@ -99,7 +104,14 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
             }
             else
             {
-                Log.Error(!string.IsNullOrEmpty(reply.reasons) ? $"FAILED: {reply.reasons}": "Failing reasons are not available.");
+                if (reply == null)
+                {
+                    Log.Error($"Received no reply from server (status code: {response.StatusCode})");
+                }
+                else
+                {
+                    Log.Error(!string.IsNullOrEmpty(reply.reasons) ? $"FAILED: {reply.reasons}" : "Failing reasons are not available.");
+                }
                 UpgradeVerdict(Verdict.Error);
             }
         }

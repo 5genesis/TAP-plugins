@@ -54,13 +54,14 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
             base.Close();
         }
 
-        public IRestResponse<MonroeReply> Send(string resource, Method method, object body)
+        public IRestResponse<MonroeReply> SendToAgent(string jsonConfig, int duration)
         {
-            RestRequest request = new RestRequest(resource, method, DataFormat.Json);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddJsonBody(body);
+            RestRequest request = new RestRequest("api/monroe", Method.GET, DataFormat.Json);
+            request.Timeout = -1;
+            request.AddParameter("config", jsonConfig);
+            request.AddQueryParameter("duration", duration.ToString());
 
-            return client.Execute<MonroeReply>(request, method);
+            return client.Execute<MonroeReply>(request, Method.GET);
         }
     }
 }
