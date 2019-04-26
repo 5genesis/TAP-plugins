@@ -26,21 +26,21 @@ Requires Debian Stretch and monroe-experiment-core > 0.2.0 (https://github.com/M
 
 ### Actions
 1. Will deploy and start a experiment, eg:
-    * curl -d '{ "script": "jonakarl/nodetest"}' -H "Content-Type: application/json" -X POST http://<URL>:8080/api/v1.0/experiment/test1/start
-2. Will stop (ie deleta a experiment) and retrive the results (as a zip file), eg: 
-    * curl -X POST http://<URL>:8080/api/v1.0/experiment/test1/stop -o test1.zip
+    * ```curl -d '{ "script": "jonakarl/nodetest"}' -H "Content-Type: application/json" -X POST http://<URL>:8080/api/v1.0/experiment/test1/start```
+2. Will stop (ie delete a experiment) and retrive the results (as a zip file), eg: 
+    * ```curl -X POST http://<URL>:8080/api/v1.0/experiment/test1/stop -o test1.zip```
 3. Will retrive status of a given experiment, eg: 
-    * curl http://<URL>:8080/api/v1.0/experiment/test1
+    * ```curl http://<URL>:8080/api/v1.0/experiment/test1```
         * HTTP_200_OK --- experiment is still running 
         * HTTP_428_PRECONDITION_REQUIRED --- experiment is deployed but not running (either stopped or has not started yet)
         * HTTP_404_NOT_FOUND --- experiment is not deplyed (ie does not exist)
 4. Will return currently running and deployed experiments, eg: 
-    * curl http://<URL>:8080/api/v1.0/experiment
+    * ```curl http://<URL>:8080/api/v1.0/experiment```
 5. Deploys a experiment, eg: 
-    *  curl -d '{ "script": "jonakarl/nodetest"}' -H "Content-Type: application/json" -X POST http://<URL>:8080/api/v1.0/experiment/test1
+    *  ```curl -d '{ "script": "jonakarl/nodetest"}' -H "Content-Type: application/json" -X POST http://<URL>:8080/api/v1.0/experiment/test1```
 6. Starts a experiment, eg: 
-    * curl -X PUT http://<URL>:8080/api/v1.0/experiment/test1
+    * ```curl -X PUT http://<URL>:8080/api/v1.0/experiment/test1```
 7. Will stop aka delete a experiment, eg: 
-    * curl -X DELETE http://<URL>:8080/api/v1.0/experiment/test1
+    * ```curl -X DELETE http://<URL>:8080/api/v1.0/experiment/test1```
 8. Will sync and retrive the current results of a experiment (as a zip file), eg: 
-    * curl http://<URL>:8080/api/v1.0/experiment/test1/results -o test1.zip 
+    * ```curl http://<URL>:8080/api/v1.0/experiment/test1/results -o test1.zip```
