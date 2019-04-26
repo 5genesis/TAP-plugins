@@ -10,8 +10,8 @@ The scheduler/agent listen on port 8080 on all interfaces and do NOT  enforce an
 
 
 ## Howto install 
-Requires Debian Stretch and monroe-experiment-core > 0.2.0 (https://github.com/MONROE-PROJECT/monroe-experiment-core)
-```apt install ./monroe-tap-agent*.deb```
+1. Install Debian Stretch and monroe-experiment-core > 0.2.0 (https://github.com/MONROE-PROJECT/monroe-experiment-core)
+2. ```apt install ./monroe-tap-agent*.deb```
 
 ## Endpoints : 
 
