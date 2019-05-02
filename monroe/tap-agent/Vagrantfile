@@ -1,0 +1,55 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Requires circle and table-allocator deb files to be present on the Vagrantfile folder.
+# Builds monroe-experiment-core from the repository but takes the monroe-tap-agent files from this folder.
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/stretch64"
+
+  config.vm.network "forwarded_port", guest: 8080, host: 8080
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "monroe-tap-agent"
+    vb.memory = "1024"
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+
+    # Install dependencies
+    sed -i -e 's/main/main non-free/g' /etc/apt/sources.list
+    export DEBIAN_FRONTEND=noninteractive && apt-get update
+
+    apt-get -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
+            --no-install-recommends --no-install-suggests --allow-unauthenticated install \
+            git curl jq ssh libuv1 libjson-c3 libjq1 libonig4 dnsutils dos2unix policykit-1
+
+    mkdir /deb_files
+    cp /vagrant/*.deb /deb_files
+
+    # Install docker
+    curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
+
+    # Build the Monroe-experiment-core (from repo)
+    git clone https://github.com/MONROE-PROJECT/monroe-experiment-core.git
+    cd monroe-experiment-core
+    echo "TimeoutSec=infinity" >> ./core/lib/systemd/system/monroe-namespace.service
+    ./build.sh  ./core /deb_files
+
+    # Build the Monroe-tap-agent (from the local version)
+    mkdir /source
+    cp -r /vagrant/* /source/
+    cd /source
+    dos2unix ./build.sh ./opt/monroe/tap-agent/monroe-tap-agent
+    ./build.sh  /source /deb_files
+
+    # Install deb files and clean-up
+    apt install -y /deb_files/*.deb
+    rm -r /source
+    rm -r /deb_files
+
+    # Ensure that tap-agent service is running
+    systemctl start monroe-tap-agent
+
+  SHELL
+end
