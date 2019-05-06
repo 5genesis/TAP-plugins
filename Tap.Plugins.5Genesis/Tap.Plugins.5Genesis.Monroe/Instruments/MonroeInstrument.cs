@@ -14,6 +14,10 @@ using System.ComponentModel;
 using Keysight.Tap;
 
 using RestSharp;
+using System.Net;
+using System.Security;
+
+using Tap.Plugins._5Genesis.Misc.Extensions;
 
 namespace Tap.Plugins._5Genesis.Monroe.Instruments
 {
@@ -31,12 +35,20 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
         [Display("Agent Port", Group: "Monroe", Order: 2.2, Description: "TAP Agent Port")]
         public int Port { get; set; }
 
+        [Display("API Key", Group: "Monroe", Order: 2.3, Description: "TAP Agent API Key")]
+        public SecureString ApiKey { get; set; }
+
+        [Display("Allow insecure connections", Group: "Monroe", Order: 2.4, Description: "Ignore SSL errors")]
+        public bool Insecure { get; set; }
+        
         #endregion
 
         public MonroeInstrument()
         {
             Host = "127.0.0.1";
             Port = 8080;
+            Insecure = false;
+            ApiKey = "$3cr3t_Pa$$w0rd!".ToSecureString();
 
             Rules.Add(() => (!string.IsNullOrWhiteSpace(Host)), "Please select an IP Address", "Host");
             Rules.Add(() => (Port > 0), "Please select a valid port number", "Port");
@@ -45,7 +57,12 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
         public override void Open()
         {
             base.Open();
-            this.client = new RestClient($"http://{Host}:{Port}/");
+
+            if (Insecure) {
+                ServicePointManager.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+            }
+
+            this.client = new RestClient($"https://{Host}:{Port}/");
         }
 
         public override void Close()
