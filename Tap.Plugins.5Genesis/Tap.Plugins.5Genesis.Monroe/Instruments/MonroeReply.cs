@@ -13,6 +13,8 @@ using System.Net;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO.Compression;
+using Newtonsoft.Json.Linq;
 
 namespace Tap.Plugins._5Genesis.Monroe.Instruments
 {
@@ -32,6 +34,46 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
             {
                 File.Delete(FilePath);
             }
+        }
+
+        public IEnumerable<Dictionary<string, string>> Results
+        {
+            get
+            {
+                if (FilePath != null && File.Exists(FilePath))
+                {
+                    ZipArchive zip = ZipFile.Open(FilePath, ZipArchiveMode.Read);
+                    foreach (ZipArchiveEntry entry in zip.Entries.OrderBy(e => e.Name))
+                    {
+                        if (entry.Name.EndsWith(".json"))
+                        {
+                            foreach (var result in parseEntry(entry)) { yield return result; }
+                        }
+                    }
+                    zip.Dispose();
+                }
+            }
+        }
+
+        private IEnumerable<Dictionary<string, string>> parseEntry(ZipArchiveEntry entry)
+        {
+            StreamReader reader = new StreamReader(entry.Open());
+            string line = string.Empty;
+            while ((line = reader.ReadLine()) != null)
+            {
+                yield return parseLine(line);
+            }
+        }
+
+        private Dictionary<string, string> parseLine(string line)
+        {
+            JObject json = JObject.Parse(line);
+            Dictionary<string, string> result = new Dictionary<string, string>();
+            foreach (var item in json)
+            {
+                result[item.Key.ToString()] = item.Value.ToString();
+            }
+            return result;
         }
     }
 }
