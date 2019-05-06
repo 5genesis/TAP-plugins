@@ -59,7 +59,9 @@
     <Compile Include="Instruments\MonroeInstrument.cs" />
     <Compile Include="Instruments\MonroeReply.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Steps\MonroeStep.cs" />
+    <Compile Include="Steps\MonroeStopStep.cs" />
+    <Compile Include="Steps\MonroeStartStep.cs" />
+    <Compile Include="Steps\MonroeBaseStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

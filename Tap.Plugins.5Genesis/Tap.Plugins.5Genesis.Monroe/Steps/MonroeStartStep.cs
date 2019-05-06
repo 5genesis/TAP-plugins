@@ -1,0 +1,79 @@
+﻿// Author:      Bruno Garcia Garcia <bgarcia@lcc.uma.es>
+// Copyright:   Copyright 2019-2020 Universidad de Málaga (University of Málaga), Spain
+//
+// This file is part of the 5GENESIS project. The 5GENESIS project is funded by the European Union’s
+// Horizon 2020 research and innovation programme, grant agreement No 815178.
+//
+// This file cannot be modified or redistributed. This header cannot be removed.
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.ComponentModel;
+using Keysight.Tap;
+using Newtonsoft.Json;
+using System.Text.RegularExpressions;
+
+namespace Tap.Plugins._5Genesis.Monroe.Steps
+{
+    [Display("MONROE Experiment Start", Group: "5Genesis")]
+    public class MonroeStartStep : MonroeBaseStep
+    {
+        [Flags]
+        public enum ActionEnum {
+            Deploy = 1,
+            Start = 2
+        }
+
+        #region Settings
+
+        [Display("Actions", Group: "Step Configuration", Order: 1.3)]
+        public ActionEnum Action { get; set; }
+
+        [Display("Experiment", Group: "Experiment Configuration", Order: 2.1, Description: "Experiment name")]
+        public string Experiment { get; set; }
+
+        [Display("Script", Group: "Experiment Configuration", Order: 2.1, Description: "Script")]
+        public string Script { get; set; }
+
+        [Display("Options", Group: "Experiment Configuration", Order: 2.2, Description: "Options passed to the experiment (json string)")]
+        public string Options { get; set; }
+
+        #endregion
+
+        public MonroeStartStep()
+        {
+            Experiment = "experiment";
+            Script = "monroe/ping";
+            Options = "{\"server\":\"8.8.8.8\"}";
+            Action = ActionEnum.Deploy | ActionEnum.Start;
+
+            Rules.Add(() => (!Regex.IsMatch(Experiment, @"[^A-Za-z0-9_\-]")), "Invalid name. Allowed characters are [A-z],[0-9],[_,-].", "Experiment");
+            Rules.Add(() => (!string.IsNullOrWhiteSpace(Script)), "Script field is not present.", "Script");
+            Rules.Add(() => (!string.IsNullOrWhiteSpace(Options)), "Option field field is not present.", "Options");
+        }
+
+        public override void Run() {
+            if (Action.HasFlag(ActionEnum.Deploy))
+            {
+                Dictionary<string, object> config = new Dictionary<string, object>
+                {
+                    ["script"] = this.Script
+                };
+
+                dynamic json = JsonConvert.DeserializeObject(Options);
+                foreach (var item in json)
+                {
+                    config.Add(item.Name, item.Value);
+                }
+
+                Instrument.StartExperiment(Experiment, config, deployOnly: !Action.HasFlag(ActionEnum.Start));
+            }
+            else if (Action.HasFlag(ActionEnum.Start))
+            {
+                // TODO
+            }
+        }
+    }
+}

@@ -21,6 +21,8 @@ using System.Security;
 using Tap.Plugins._5Genesis.Misc.Extensions;
 using System.IO;
 using System.IO.Compression;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Tap.Plugins._5Genesis.Monroe.Instruments
 {
@@ -74,11 +76,10 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
             base.Close();
         }
 
-
         public MonroeReply SendRequest(string endpoint, Method method, object body = null)
         {
             Log.Debug($"Sending request: {method} - {endpoint}");
-            if (body != null) { Log.Debug($"  Body: {body.ToString()}"); }
+            if (body != null) { Log.Debug($"  Body: {JsonConvert.SerializeObject(body)}"); }
 
             RestRequest request = new RestRequest(endpoint, method, DataFormat.Json);
             string apiKey = ApiKey.GetString();
@@ -111,27 +112,7 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
         {
             string endpoint = $"/api/v1.0/experiment/{experiment}{(stopOnly ? "" : "/stop")}";
             Method method = stopOnly ? Method.DELETE : Method.POST;
-
-            MonroeReply reply = SendRequest(endpoint, method);
-
-            if (!stopOnly) // Parse results
-            {
-                Log.Debug($"Parsing results from file {reply.FilePath}");
-                this.parseResults(reply.FilePath);
-                reply.RemoveTempFile();
-            }
-
-            return reply;
-        }
-
-        private void parseResults(string path)
-        {
-            ZipArchive zip = ZipFile.Open(path, ZipArchiveMode.Read);
-            foreach (ZipArchiveEntry entry in zip.Entries)
-            {
-                Log.Info(entry.Name);
-            }
-            zip.Dispose();
+            return SendRequest(endpoint, method); 
         }
     }
 }
