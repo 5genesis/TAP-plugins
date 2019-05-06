@@ -19,7 +19,11 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
     public class MonroeReply
     {
         public string Message { get; set; }
+
         public HttpStatusCode Status { get; set; }
+
+        public string StatusDescription { get; set; }
+
         public string FilePath { get; set; }
 
         public void RemoveTempFile()

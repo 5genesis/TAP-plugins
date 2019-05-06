@@ -20,6 +20,7 @@ using System.Security;
 
 using Tap.Plugins._5Genesis.Misc.Extensions;
 using System.IO;
+using System.IO.Compression;
 
 namespace Tap.Plugins._5Genesis.Monroe.Instruments
 {
@@ -76,6 +77,9 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
 
         public MonroeReply SendRequest(string endpoint, Method method, object body = null)
         {
+            Log.Debug($"Sending request: {method} - {endpoint}");
+            if (body != null) { Log.Debug($"  Body: {body.ToString()}"); }
+
             RestRequest request = new RestRequest(endpoint, method, DataFormat.Json);
             string apiKey = ApiKey.GetString();
             request.AddHeader("x-api-key", apiKey);
@@ -86,6 +90,7 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
 
             MonroeReply result = reply.Data ?? new MonroeReply();
             result.Status = reply.StatusCode;
+            result.StatusDescription = reply.StatusDescription;
             if (reply.ContentType == "application/zip")
             {
                 string tempPath = Path.GetTempFileName();
@@ -96,14 +101,37 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
             return result;
         }
 
-        public IRestResponse<MonroeReply> SendToAgent(string jsonConfig, int duration)
+        public MonroeReply StartExperiment(string experiment, object body, bool deployOnly = false)
         {
-            RestRequest request = new RestRequest("api/monroe", Method.GET, DataFormat.Json);
-            request.Timeout = -1;
-            request.AddParameter("config", jsonConfig);
-            request.AddQueryParameter("duration", duration.ToString());
+            string endpoint = $"/api/v1.0/experiment/{experiment}{(deployOnly ? "" : "/start")}";
+            return SendRequest(endpoint, Method.POST, body);
+        }
 
-            return client.Execute<MonroeReply>(request, Method.GET);
+        public MonroeReply StopExperiment(string experiment, bool stopOnly = false)
+        {
+            string endpoint = $"/api/v1.0/experiment/{experiment}{(stopOnly ? "" : "/stop")}";
+            Method method = stopOnly ? Method.DELETE : Method.POST;
+
+            MonroeReply reply = SendRequest(endpoint, method);
+
+            if (!stopOnly) // Parse results
+            {
+                Log.Debug($"Parsing results from file {reply.FilePath}");
+                this.parseResults(reply.FilePath);
+                reply.RemoveTempFile();
+            }
+
+            return reply;
+        }
+
+        private void parseResults(string path)
+        {
+            ZipArchive zip = ZipFile.Open(path, ZipArchiveMode.Read);
+            foreach (ZipArchiveEntry entry in zip.Entries)
+            {
+                Log.Info(entry.Name);
+            }
+            zip.Dispose();
         }
     }
 }
