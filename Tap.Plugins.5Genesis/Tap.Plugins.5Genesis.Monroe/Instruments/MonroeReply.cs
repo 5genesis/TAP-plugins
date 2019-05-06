@@ -9,6 +9,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -16,7 +18,16 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
 {
     public class MonroeReply
     {
-        public string results { get; set; }
-        public string reasons { get; set; }
+        public string Message { get; set; }
+        public HttpStatusCode Status { get; set; }
+        public string FilePath { get; set; }
+
+        public void RemoveTempFile()
+        {
+            if (FilePath != null && File.Exists(FilePath))
+            {
+                File.Delete(FilePath);
+            }
+        }
     }
 }

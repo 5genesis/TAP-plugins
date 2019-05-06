@@ -14,10 +14,12 @@ using System.ComponentModel;
 using Keysight.Tap;
 
 using RestSharp;
+using RestSharp.Extensions;
 using System.Net;
 using System.Security;
 
 using Tap.Plugins._5Genesis.Misc.Extensions;
+using System.IO;
 
 namespace Tap.Plugins._5Genesis.Monroe.Instruments
 {
@@ -69,6 +71,29 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
         {
             this.client = null;
             base.Close();
+        }
+
+
+        public MonroeReply SendRequest(string endpoint, Method method, object body = null)
+        {
+            RestRequest request = new RestRequest(endpoint, method, DataFormat.Json);
+            string apiKey = ApiKey.GetString();
+            request.AddHeader("x-api-key", apiKey);
+            request.Timeout = -1;
+            if (body != null) { request.AddJsonBody(body); }
+
+            IRestResponse<MonroeReply> reply = client.Execute<MonroeReply>(request, method);
+
+            MonroeReply result = reply.Data ?? new MonroeReply();
+            result.Status = reply.StatusCode;
+            if (reply.ContentType == "application/zip")
+            {
+                string tempPath = Path.GetTempFileName();
+                reply.RawBytes.SaveAs(tempPath);
+                result.FilePath = tempPath;
+            }
+            
+            return result;
         }
 
         public IRestResponse<MonroeReply> SendToAgent(string jsonConfig, int duration)
