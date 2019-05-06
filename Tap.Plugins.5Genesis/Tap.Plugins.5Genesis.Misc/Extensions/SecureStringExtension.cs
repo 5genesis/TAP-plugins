@@ -10,7 +10,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
+namespace Tap.Plugins._5Genesis.Misc.Extensions
 {
     public static class SecureStringExtension
     {
