@@ -14,7 +14,7 @@ using Tap.Plugins._5Genesis.SshInstrument.Instruments;
 
 namespace Tap.Plugins._5Genesis.SshInstrument.Steps
 {
-    [Display("Retrieve Background SSH Command", Group: "5Genesis", Description: "Retrieve results of a background SSH command")]
+    [Display("Retrieve Background SSH Command", Groups: new string[] { "5Genesis", "SSH" }, Description: "Retrieve results of a background SSH command")]
     public class RetrieveBackgroundSshCommandStep : TestStep
     {
         #region Settings

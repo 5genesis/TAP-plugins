@@ -14,7 +14,7 @@ using Tap.Plugins._5Genesis.SshInstrument.Instruments;
 
 namespace Tap.Plugins._5Genesis.SshInstrument.Steps
 {
-    [Display("Run SSH Command", Group: "5Genesis", Description: "Send a command through an SSH connection")]
+    [Display("Run SSH Command", Groups: new string[] { "5Genesis", "SSH" }, Description: "Send a command through an SSH connection")]
     public class SshCommandStep : SshBaseStep
     {
         #region Settings

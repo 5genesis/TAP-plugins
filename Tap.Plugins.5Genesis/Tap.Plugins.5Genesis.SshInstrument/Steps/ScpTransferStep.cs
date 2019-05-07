@@ -11,7 +11,7 @@ using System;
 
 namespace Tap.Plugins._5Genesis.SshInstrument.Steps
 {
-    [Display("SCP transfer", Group: "5Genesis", Description: "Send/Retrieve files and folders through SCP")]
+    [Display("SCP transfer", Groups: new string[] { "5Genesis", "SSH" }, Description: "Send/Retrieve files and folders through SCP")]
     public class ScpTransferStep : SshBaseStep
     {
         public enum DirectionEnum { Pull, Push }
