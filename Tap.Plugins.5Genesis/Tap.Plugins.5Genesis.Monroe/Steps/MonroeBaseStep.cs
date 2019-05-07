@@ -48,5 +48,22 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
                 UpgradeVerdict(VerdictOnError.Value);
             }
         }
+
+        protected void publishResults(MonroeReply reply)
+        {
+            foreach (Dictionary<string, string> dict in reply.Results)
+            {
+                string name = dict.ContainsKey("DataId") ? dict["DataId"] : "MONROE Result";
+                List<string> columns = new List<string>(dict.Count);
+                List<string> values = new List<string>(dict.Count);
+                foreach (var item in dict)
+                {
+                    columns.Add(item.Key);
+                    values.Add(item.Value);
+                }
+
+                Results.Publish(name, columns, values.ToArray());
+            }
+        }
     }
 }

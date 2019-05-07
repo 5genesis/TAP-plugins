@@ -32,7 +32,7 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
         {
             if (FilePath != null && File.Exists(FilePath))
             {
-                File.Delete(FilePath);
+                try { File.Delete(FilePath); } catch { } // Silently ignore
             }
         }
 

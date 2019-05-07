@@ -42,6 +42,11 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
         public override void Run() {
             MonroeReply reply = Instrument.StopExperiment(Experiment, stopOnly: !Report);
             handleReply(reply);
+            if (reply.Success && Report)
+            {
+                publishResults(reply);
+            }
+            reply.RemoveTempFile();
         }
     }
 }
