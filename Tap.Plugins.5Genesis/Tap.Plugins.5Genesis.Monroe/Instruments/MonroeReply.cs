@@ -28,6 +28,10 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
 
         public string FilePath { get; set; }
 
+        public List<string> RunningExperiments { get; set; }
+
+        public List<string> ScheduledExperiments { get; set; }
+
         public void RemoveTempFile()
         {
             if (FilePath != null && File.Exists(FilePath))
