@@ -14,10 +14,10 @@ using System.ComponentModel;
 using Keysight.Tap;
 
 using Tap.Plugins._5Genesis.Monroe.Instruments;
+using System.Text.RegularExpressions;
 
 namespace Tap.Plugins._5Genesis.Monroe.Steps
 {
-    [Display("MONROE", Group: "5Genesis")]
     public abstract class MonroeBaseStep : TestStep
     {
         #region Settings
@@ -64,6 +64,23 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
 
                 Results.Publish(name, columns, values.ToArray());
             }
+        }
+    }
+
+    public abstract class MonroeExperimentBaseStep : MonroeBaseStep
+    {
+        #region Settings
+
+        [Display("Experiment", Group: "Experiment Configuration", Order: 2.1, Description: "Experiment name")]
+        public string Experiment { get; set; }
+
+        #endregion
+
+        public MonroeExperimentBaseStep()
+        {
+            Experiment = "experiment";
+
+            Rules.Add(() => (!Regex.IsMatch(Experiment, @"[^A-Za-z0-9_\-]")), "Invalid name. Allowed characters are [A-z],[0-9],[_,-].", "Experiment");
         }
     }
 }

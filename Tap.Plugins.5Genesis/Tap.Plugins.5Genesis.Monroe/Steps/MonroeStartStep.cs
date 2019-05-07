@@ -19,7 +19,7 @@ using Tap.Plugins._5Genesis.Monroe.Instruments;
 namespace Tap.Plugins._5Genesis.Monroe.Steps
 {
     [Display("MONROE Experiment Start", Group: "5Genesis")]
-    public class MonroeStartStep : MonroeBaseStep
+    public class MonroeStartStep : MonroeExperimentBaseStep
     {
         [Flags]
         public enum ActionEnum {
@@ -32,25 +32,20 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
         [Display("Actions", Group: "Step Configuration", Order: 1.3)]
         public ActionEnum Actions { get; set; }
 
-        [Display("Experiment", Group: "Experiment Configuration", Order: 2.1, Description: "Experiment name")]
-        public string Experiment { get; set; }
-
-        [Display("Script", Group: "Experiment Configuration", Order: 2.1, Description: "Script")]
+        [Display("Script", Group: "Experiment Configuration", Order: 2.2, Description: "Script")]
         public string Script { get; set; }
 
-        [Display("Options", Group: "Experiment Configuration", Order: 2.2, Description: "Options passed to the experiment (json string)")]
+        [Display("Options", Group: "Experiment Configuration", Order: 2.3, Description: "Options passed to the experiment (json string)")]
         public string Options { get; set; }
 
         #endregion
 
         public MonroeStartStep()
         {
-            Experiment = "experiment";
             Script = "monroe/ping";
             Options = "{\"server\":\"8.8.8.8\"}";
             Actions = ActionEnum.Deploy | ActionEnum.Start;
 
-            Rules.Add(() => (!Regex.IsMatch(Experiment, @"[^A-Za-z0-9_\-]")), "Invalid name. Allowed characters are [A-z],[0-9],[_,-].", "Experiment");
             Rules.Add(() => (!string.IsNullOrWhiteSpace(Script)), "Script field is not present.", "Script");
             Rules.Add(() => (!string.IsNullOrWhiteSpace(Options)), "Option field field is not present.", "Options");
         }

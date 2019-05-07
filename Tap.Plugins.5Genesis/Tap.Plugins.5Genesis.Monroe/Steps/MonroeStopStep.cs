@@ -18,13 +18,9 @@ using Tap.Plugins._5Genesis.Monroe.Instruments;
 namespace Tap.Plugins._5Genesis.Monroe.Steps
 {
     [Display("MONROE Experiment Stop", Group: "5Genesis")]
-    public class MonroeStopStep : MonroeBaseStep
+    public class MonroeStopStep : MonroeExperimentBaseStep
     {
-
         #region Settings
-
-        [Display("Experiment", Group: "Experiment Configuration", Order: 2.1, Description: "Experiment name")]
-        public string Experiment { get; set; }
 
         [Display("Publish results", Group: "Experiment Configuration", Order: 2.2, Description: "Parse generated JSON files and publish as TAP results.")]
         public bool Report { get; set; }
@@ -33,10 +29,7 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
 
         public MonroeStopStep()
         {
-            Experiment = "experiment";
             Report = true;
-
-            Rules.Add(() => (!Regex.IsMatch(Experiment, @"[^A-Za-z0-9_\-]")), "Invalid name. Allowed characters are [A-z],[0-9],[_,-].", "Experiment");
         }
 
         public override void Run() {
