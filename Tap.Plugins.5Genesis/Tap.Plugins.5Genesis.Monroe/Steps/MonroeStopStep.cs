@@ -17,7 +17,7 @@ using Tap.Plugins._5Genesis.Monroe.Instruments;
 
 namespace Tap.Plugins._5Genesis.Monroe.Steps
 {
-    [Display("MONROE Experiment Stop", Group: "5Genesis")]
+    [Display("Stop Experiment", Groups: new string[] { "5Genesis", "MONROE" })]
     public class MonroeStopStep : MonroeExperimentBaseStep
     {
         #region Settings
@@ -32,7 +32,8 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
             Report = true;
         }
 
-        public override void Run() {
+        public override void Run()
+        {
             MonroeReply reply = Instrument.StopExperiment(Experiment, stopOnly: !Report);
             handleReply(reply);
             if (reply.Success && Report)

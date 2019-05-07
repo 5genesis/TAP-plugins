@@ -18,7 +18,7 @@ using Tap.Plugins._5Genesis.Monroe.Instruments;
 
 namespace Tap.Plugins._5Genesis.Monroe.Steps
 {
-    [Display("MONROE Experiment Start", Group: "5Genesis")]
+    [Display("Start Experiment", Groups: new string[] { "5Genesis", "MONROE" })]
     public class MonroeStartStep : MonroeExperimentBaseStep
     {
         [Flags]
@@ -50,7 +50,8 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
             Rules.Add(() => (!string.IsNullOrWhiteSpace(Options)), "Option field field is not present.", "Options");
         }
 
-        public override void Run() {
+        public override void Run()
+        {
             Dictionary<string, object> configuration = null;
 
             if (Actions.HasFlag(ActionEnum.Deploy))
