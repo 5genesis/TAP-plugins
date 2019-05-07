@@ -25,8 +25,28 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
         [Display("Instrument", Group: "Instrument", Order: 1.0)]
         public MonroeInstrument Instrument { get; set; }
 
+        [Display("Set Verdict on Error", Group: "Verdict", Order: 99.0, 
+            Description: "Set step verdict to the selected value if MONROE reply does not indicate a success (2xx status code)")]
+        public Enabled<Verdict> VerdictOnError { get; set; }
+
         #endregion
 
-        public MonroeBaseStep() { }
+        public MonroeBaseStep()
+        {
+            VerdictOnError = new Enabled<Verdict>() { IsEnabled = false, Value = Verdict.Error };
+        }
+
+        protected void handleReply(MonroeReply reply)
+        {
+            string message = $"MONROE>> Message: '{reply.Message}' - Status: {reply.Status} ({reply.StatusDescription})";
+
+            if (reply.Success) { Log.Info(message); }
+            else { Log.Error(message); }
+
+            if (VerdictOnError.IsEnabled && !reply.Success)
+            {
+                UpgradeVerdict(VerdictOnError.Value);
+            }
+        }
     }
 }

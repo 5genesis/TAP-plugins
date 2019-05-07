@@ -14,6 +14,7 @@ using System.ComponentModel;
 using Keysight.Tap;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
+using Tap.Plugins._5Genesis.Monroe.Instruments;
 
 namespace Tap.Plugins._5Genesis.Monroe.Steps
 {
@@ -29,7 +30,7 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
         #region Settings
 
         [Display("Actions", Group: "Step Configuration", Order: 1.3)]
-        public ActionEnum Action { get; set; }
+        public ActionEnum Actions { get; set; }
 
         [Display("Experiment", Group: "Experiment Configuration", Order: 2.1, Description: "Experiment name")]
         public string Experiment { get; set; }
@@ -47,7 +48,7 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
             Experiment = "experiment";
             Script = "monroe/ping";
             Options = "{\"server\":\"8.8.8.8\"}";
-            Action = ActionEnum.Deploy | ActionEnum.Start;
+            Actions = ActionEnum.Deploy | ActionEnum.Start;
 
             Rules.Add(() => (!Regex.IsMatch(Experiment, @"[^A-Za-z0-9_\-]")), "Invalid name. Allowed characters are [A-z],[0-9],[_,-].", "Experiment");
             Rules.Add(() => (!string.IsNullOrWhiteSpace(Script)), "Script field is not present.", "Script");
@@ -55,9 +56,11 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
         }
 
         public override void Run() {
-            if (Action.HasFlag(ActionEnum.Deploy))
+            Dictionary<string, object> configuration = null;
+
+            if (Actions.HasFlag(ActionEnum.Deploy))
             {
-                Dictionary<string, object> config = new Dictionary<string, object>
+                configuration = new Dictionary<string, object>
                 {
                     ["script"] = this.Script
                 };
@@ -65,15 +68,15 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
                 dynamic json = JsonConvert.DeserializeObject(Options);
                 foreach (var item in json)
                 {
-                    config.Add(item.Name, item.Value);
+                    configuration.Add(item.Name, item.Value);
                 }
+            }
 
-                Instrument.StartExperiment(Experiment, config, deployOnly: !Action.HasFlag(ActionEnum.Start));
-            }
-            else if (Action.HasFlag(ActionEnum.Start))
-            {
-                // TODO
-            }
+            MonroeReply reply = Instrument.StartExperiment(Experiment, configuration, 
+                deploy: Actions.HasFlag(ActionEnum.Deploy),
+                start: Actions.HasFlag(ActionEnum.Start));
+
+            handleReply(reply);
         }
     }
 }

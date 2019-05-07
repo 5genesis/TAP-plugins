@@ -102,10 +102,19 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
             return result;
         }
 
-        public MonroeReply StartExperiment(string experiment, object body, bool deployOnly = false)
+        public MonroeReply StartExperiment(string experiment, object body, bool deploy = true, bool start = true)
         {
-            string endpoint = $"/api/v1.0/experiment/{experiment}{(deployOnly ? "" : "/start")}";
-            return SendRequest(endpoint, Method.POST, body);
+            if (!deploy && !start)
+            {
+                string error = "Called StartExperiment with no actions. Ignoring.";
+                Log.Warning(error);
+                return new MonroeReply() { Status = HttpStatusCode.Ambiguous, Message = error};
+            }
+
+            // Same endpoint for deploy only and start only. Append /start if deploy+start
+            string endpoint = $"/api/v1.0/experiment/{experiment}{(start && deploy ? "/start" : "")}";
+            Method method = deploy ? Method.POST : Method.PUT;
+            return SendRequest(endpoint, method, body);
         }
 
         public MonroeReply StopExperiment(string experiment, bool stopOnly = false)
@@ -113,6 +122,21 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
             string endpoint = $"/api/v1.0/experiment/{experiment}{(stopOnly ? "" : "/stop")}";
             Method method = stopOnly ? Method.DELETE : Method.POST;
             return SendRequest(endpoint, method); 
+        }
+
+        public MonroeReply RetrieveResults(string experiment)
+        {
+            return SendRequest($"/api/v1.0/experiment/{experiment}/result", Method.GET);
+        }
+
+        public MonroeReply Status(string experiment)
+        {
+            return SendRequest($"/api/v1.0/experiment/{experiment}", Method.GET);
+        }
+
+        public MonroeReply List()
+        {
+            return SendRequest("/api/v1.0/experiment", Method.GET);
         }
     }
 }

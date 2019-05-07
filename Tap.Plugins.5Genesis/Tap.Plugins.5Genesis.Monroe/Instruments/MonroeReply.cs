@@ -36,6 +36,11 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
             }
         }
 
+        public bool Success
+        {
+            get { return ((int)Status >= 200) && ((int)Status <= 299); }
+        }
+
         public IEnumerable<Dictionary<string, string>> Results
         {
             get

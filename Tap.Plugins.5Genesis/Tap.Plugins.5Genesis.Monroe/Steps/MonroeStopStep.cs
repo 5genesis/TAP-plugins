@@ -13,6 +13,7 @@ using System.Text;
 using System.ComponentModel;
 using Keysight.Tap;
 using System.Text.RegularExpressions;
+using Tap.Plugins._5Genesis.Monroe.Instruments;
 
 namespace Tap.Plugins._5Genesis.Monroe.Steps
 {
@@ -39,7 +40,8 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
         }
 
         public override void Run() {
-            Instrument.StopExperiment(Experiment, stopOnly: !Report);
+            MonroeReply reply = Instrument.StopExperiment(Experiment, stopOnly: !Report);
+            handleReply(reply);
         }
     }
 }
