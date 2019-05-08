@@ -14,6 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Keysight.Tap;
 using Renci.SshNet;
+using Tap.Plugins._5Genesis.Misc.Extensions;
 
 namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
 {

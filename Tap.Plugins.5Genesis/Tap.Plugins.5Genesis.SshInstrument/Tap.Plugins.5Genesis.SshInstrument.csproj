@@ -51,7 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Instruments\BackgroundSshCommand.cs" />
-    <Compile Include="Instruments\SecureStringExtension.cs" />
     <Compile Include="Instruments\SshInstrument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Steps\RetrieveBackgroundSshCommandStep.cs" />
@@ -65,6 +64,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Tap.Plugins.5Genesis.Misc\Tap.Plugins.5Genesis.Misc.csproj">
+      <Project>{759ff8ce-a56e-477e-afb5-112c8bffd720}</Project>
+      <Name>Tap.Plugins.5Genesis.Misc</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

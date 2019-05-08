@@ -7,11 +7,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{8A02DC6B-7468-44C6-B4C9-C537777C017E}</ProjectGuid>
+    <ProjectGuid>{759FF8CE-A56E-477E-AFB5-112C8BFFD720}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tap.Plugins._5Genesis.Monroe</RootNamespace>
-    <AssemblyName>Tap.Plugins.5Genesis.Monroe</AssemblyName>
+    <RootNamespace>Tap.Plugins._5Genesis.Misc</RootNamespace>
+    <AssemblyName>Tap.Plugins.5Genesis.Misc</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -33,17 +33,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="RestSharp, Version=106.6.9.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestSharp.106.6.9\lib\net452\RestSharp.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,24 +47,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Instruments\MonroeInstrument.cs" />
-    <Compile Include="Instruments\MonroeReply.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Extensions\SecureStringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Steps\MonroeListStep.cs" />
-    <Compile Include="Steps\MonroeStatusStep.cs" />
-    <Compile Include="Steps\MonroeRetrieveStep.cs" />
-    <Compile Include="Steps\MonroeStopStep.cs" />
-    <Compile Include="Steps\MonroeStartStep.cs" />
-    <Compile Include="Steps\MonroeBaseSteps.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Tap.Plugins.5Genesis.Misc\Tap.Plugins.5Genesis.Misc.csproj">
-      <Project>{759ff8ce-a56e-477e-afb5-112c8bffd720}</Project>
-      <Name>Tap.Plugins.5Genesis.Misc</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

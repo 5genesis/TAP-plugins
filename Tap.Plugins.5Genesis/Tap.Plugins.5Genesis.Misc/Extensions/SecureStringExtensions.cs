@@ -10,9 +10,9 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 
-namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
+namespace Tap.Plugins._5Genesis.Misc.Extensions
 {
-    public static class SecureStringExtension
+    public static class SecureStringExtensions
     {
         // https://stackoverflow.com/a/819705
         public static string GetString(this SecureString secureString)
