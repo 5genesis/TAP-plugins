@@ -56,6 +56,7 @@
   <ItemGroup>
     <Compile Include="Instruments\PrometheusInstrument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Steps\PrometheusStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
