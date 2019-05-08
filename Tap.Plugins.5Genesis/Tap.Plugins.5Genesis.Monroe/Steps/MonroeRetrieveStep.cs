@@ -17,25 +17,15 @@ using Tap.Plugins._5Genesis.Monroe.Instruments;
 
 namespace Tap.Plugins._5Genesis.Monroe.Steps
 {
-    [Display("Stop Experiment", Groups: new string[] { "5Genesis", "MONROE" })]
-    public class MonroeStopStep : MonroeExperimentBaseStep
+    [Display("Retrieve Experiment Results", Groups: new string[] { "5Genesis", "MONROE" })]
+    public class MonroeRetrieveStep : MonroeExperimentBaseStep
     {
-        #region Settings
-
-        [Display("Publish results", Group: "Experiment Configuration", Order: 2.2, Description: "Parse generated JSON files and publish as TAP results.")]
-        public bool Report { get; set; }
-
-        #endregion
-
-        public MonroeStopStep()
-        {
-            Report = true;
-        }
+        public MonroeRetrieveStep() {}
 
         public override void Run()
         {
-            MonroeReply reply = Instrument.StopExperiment(Experiment, stopOnly: !Report);
-            if (reply.Success && Report)
+            MonroeReply reply = Instrument.RetrieveResults(Experiment);
+            if (reply.Success)
             {
                 publishResults(reply);
             }

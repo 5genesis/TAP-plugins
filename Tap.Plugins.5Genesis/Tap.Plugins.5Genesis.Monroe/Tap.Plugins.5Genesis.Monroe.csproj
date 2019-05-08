@@ -61,6 +61,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Steps\MonroeListStep.cs" />
     <Compile Include="Steps\MonroeStatusStep.cs" />
+    <Compile Include="Steps\MonroeRetrieveStep.cs" />
     <Compile Include="Steps\MonroeStopStep.cs" />
     <Compile Include="Steps\MonroeStartStep.cs" />
     <Compile Include="Steps\MonroeBaseSteps.cs" />
