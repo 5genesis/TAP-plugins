@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.Monroe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.Misc", "Tap.Plugins.5Genesis.Misc\Tap.Plugins.5Genesis.Misc.csproj", "{759FF8CE-A56E-477E-AFB5-112C8BFFD720}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.Prometheus", "Tap.Plugins.5Genesis.Prometheus\Tap.Plugins.5Genesis.Prometheus.csproj", "{EF7E2BA5-A502-4D43-AA5E-396592CFB9EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{759FF8CE-A56E-477E-AFB5-112C8BFFD720}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{759FF8CE-A56E-477E-AFB5-112C8BFFD720}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{759FF8CE-A56E-477E-AFB5-112C8BFFD720}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF7E2BA5-A502-4D43-AA5E-396592CFB9EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF7E2BA5-A502-4D43-AA5E-396592CFB9EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF7E2BA5-A502-4D43-AA5E-396592CFB9EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF7E2BA5-A502-4D43-AA5E-396592CFB9EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
