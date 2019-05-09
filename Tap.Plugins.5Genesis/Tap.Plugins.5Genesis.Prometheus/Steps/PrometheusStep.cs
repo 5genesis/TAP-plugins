@@ -13,12 +13,12 @@ using System.Text;
 using System.ComponentModel;
 using Keysight.Tap;
 using System.Text.RegularExpressions;
-using Tap.Plugins._5Genesis.Monroe.Instruments;
+using Tap.Plugins._5Genesis.Prometheus.Instruments;
 using System.Net;
 using System.Xml.Serialization;
 using RestSharp;
 
-namespace Tap.Plugins._5Genesis.Monroe.Steps
+namespace Tap.Plugins._5Genesis.Prometheus.Steps
 {
     [Display("Publish Prometheus results", Groups: new string[] { "5Genesis", "Prometheus" })]
     public class PublishStep : TestStep
@@ -53,8 +53,8 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
         
         public override void Run()
         {
-            IRestResponse reply = Instrument.GetResults(Query, Start, End, Step);
-            Log.Info($"{reply.Content}");
+            PrometheusReply reply = Instrument.GetResults(Query, Start, End, Step);
+            Log.Info($"{reply.Results.Count()}");
         }
     }
 }

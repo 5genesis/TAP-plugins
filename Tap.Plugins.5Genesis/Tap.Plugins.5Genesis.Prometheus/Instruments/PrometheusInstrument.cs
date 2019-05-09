@@ -23,7 +23,7 @@ using System.IO.Compression;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-namespace Tap.Plugins._5Genesis.Monroe.Instruments
+namespace Tap.Plugins._5Genesis.Prometheus.Instruments
 {
     [Display("Prometheus", Group: "5Genesis", Description: "Prometheus Instrument")]
     [ShortName("PromQL")]
@@ -31,7 +31,7 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
     {
         private RestClient client = null;
 
-        private static string format = "yyyy-MM-ddTHH:mm:ss.fffZ";
+        public static string TimeFormat = "yyyy-MM-ddTHH:mm:ss.fffZ";
         private static IFormatProvider cultureInfo = System.Globalization.CultureInfo.InvariantCulture;
 
         #region Settings
@@ -66,17 +66,23 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
             base.Close();
         }
 
-        public IRestResponse GetResults(string query, DateTime start, DateTime end, double step)
+        public PrometheusReply GetResults(string query, DateTime start, DateTime end, double step)
         {
             RestRequest request = new RestRequest("/api/v1/query_range", Method.GET, DataFormat.Json);
             request.AddParameter("query", query);
-            request.AddParameter("start", start.ToString(format) );
-            request.AddParameter("end", end.ToString(format));
+            request.AddParameter("start", start.ToString(TimeFormat) );
+            request.AddParameter("end", end.ToString(TimeFormat));
             request.AddParameter("step", $"{step.ToString(cultureInfo)}s");
 
             IRestResponse reply = client.Execute(request, Method.GET);
 
-            return reply;
+            PrometheusReply result = new PrometheusReply() {
+                Status = reply.StatusCode,
+                StatusDescription = reply.StatusDescription,
+                Content = reply.Content
+            };
+            
+            return result;
         }
     }
 }
