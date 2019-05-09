@@ -26,6 +26,27 @@ namespace Tap.Plugins._5Genesis.Prometheus.Instruments
 
         public string StatusDescription { get; set; }
 
+        public string Message
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(Content))
+                {
+                    dynamic json = JsonConvert.DeserializeObject(Content);
+                    string status = json["status"].ToString();
+                    if (status == "error")
+                    {
+                        string errorType = json["errorType"];
+                        string message = json["error"];
+
+                        return $"Error: {errorType} - {message}";
+                    }
+                    else { return status; }
+                }
+                else { return "<Reply has no Content>"; }
+            }
+        }
+
         public string Content { get; set; }
 
         public bool Success
@@ -46,8 +67,6 @@ namespace Tap.Plugins._5Genesis.Prometheus.Instruments
                     {
                         yield return getResultTable(result);
                     }
-
-                    System.Diagnostics.Debug.Write("");
                 };
             }
         }
