@@ -18,6 +18,8 @@ $(GitBranchVersion) - Gets the version number in the recommended format Major.Mi
     <File Path="5Genesis\Samples\SSH_Sample.TapPlan" Obfuscate="false" UseVersion="false"></File>
     <!-- MONROE Plugin-->
     <File Path="5Genesis\Tap.Plugins.5Genesis.Monroe.dll" Obfuscate="false" SetAssemblyInfo="Version"></File>
+    <!-- Prometheus Plugin-->
+    <File Path="5Genesis\Tap.Plugins.5Genesis.Prometheus.dll" Obfuscate="false" SetAssemblyInfo="Version"></File>
     <!-- Miscellaneous Plugin-->
     <File Path="5Genesis\Tap.Plugins.5Genesis.Misc.dll" Obfuscate="false" SetAssemblyInfo="Version"></File>
   </Files>

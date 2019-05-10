@@ -7,11 +7,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0B5942DA-4595-4C59-83D3-B4ACFE5DC8F0}</ProjectGuid>
+    <ProjectGuid>{EF7E2BA5-A502-4D43-AA5E-396592CFB9EE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tap.Plugins._5Genesis.Main</RootNamespace>
-    <AssemblyName>Tap.Plugins.5Genesis.Main</AssemblyName>
+    <RootNamespace>Tap.Plugins._5Genesis.Prometheus</RootNamespace>
+    <AssemblyName>Tap.Plugins.5Genesis.Prometheus</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -33,8 +33,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=106.6.9.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.106.6.9\lib\net452\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,36 +54,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Instruments\PrometheusReply.cs" />
+    <Compile Include="Instruments\PrometheusInstrument.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="package.xml" />
+    <Compile Include="Steps\PrometheusStep.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="README.txt" />
+    <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Tap.Plugins.5Genesis.Misc\Tap.Plugins.5Genesis.Misc.csproj">
-      <Project>{759ff8ce-a56e-477e-afb5-112c8bffd720}</Project>
-      <Name>Tap.Plugins.5Genesis.Misc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tap.Plugins.5Genesis.Monroe\Tap.Plugins.5Genesis.Monroe.csproj">
-      <Project>{8a02dc6b-7468-44c6-b4c9-c537777c017e}</Project>
-      <Name>Tap.Plugins.5Genesis.Monroe</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tap.Plugins.5Genesis.Prometheus\Tap.Plugins.5Genesis.Prometheus.csproj">
-      <Project>{ef7e2ba5-a502-4d43-aa5e-396592cfb9ee}</Project>
-      <Name>Tap.Plugins.5Genesis.Prometheus</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tap.Plugins.5Genesis.SshInstrument\Tap.Plugins.5Genesis.SshInstrument.csproj">
-      <Project>{5d5f9833-544c-4874-a02d-5ca7a466af37}</Project>
-      <Name>Tap.Plugins.5Genesis.SshInstrument</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <UsingTask TaskName="Keysight.Tap.Sdk.MSBuild.PackageTask" AssemblyFile="$(TAP_PATH)\Keysight.Tap.Sdk.MSBuild.dll" />
-  <Target Name="AfterBuild" Condition="'$(Configuration)' == 'Release'">
-    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
-      <Output TaskParameter="Assemblies" ItemName="TargetInfo" />
-    </GetAssemblyIdentity>
-    <PackageTask Dir="$(TAP_PATH)" ConfFile="$(ProjectDir)\package.xml" />
-  </Target>
 </Project>
