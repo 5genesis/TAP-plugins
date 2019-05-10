@@ -35,7 +35,9 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
         [Display("Script", Group: "Experiment Configuration", Order: 2.2, Description: "Script")]
         public string Script { get; set; }
 
-        [Display("Options", Group: "Experiment Configuration", Order: 2.3, Description: "Options passed to the experiment (json string)")]
+        [Display("Options", Group: "Experiment Configuration", Order: 2.3, 
+                 Description: "Options passed to the experiment (json string). Only\n" + 
+                              "simple fields (bool, int, float, string) are supported.")]
         public string Options { get; set; }
 
         #endregion
@@ -64,7 +66,24 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
                 dynamic json = JsonConvert.DeserializeObject(Options);
                 foreach (var item in json)
                 {
-                    configuration.Add(item.Name, item.Value);
+                    object value;
+                    switch (item.Value.Type)
+                    {
+                        case Newtonsoft.Json.Linq.JTokenType.Boolean:
+                            value = item.Value.ToObject<bool>();
+                            break;
+                        case Newtonsoft.Json.Linq.JTokenType.Integer:
+                            value = item.Value.ToObject<int>();
+                            break;
+                        case Newtonsoft.Json.Linq.JTokenType.Float:
+                            value = item.Value.ToObject<double>();
+                            break;
+                        default:
+                            value = item.Value.ToString();
+                            break;
+                    }
+
+                    configuration.Add(item.Name, value);
                 }
             }
 
