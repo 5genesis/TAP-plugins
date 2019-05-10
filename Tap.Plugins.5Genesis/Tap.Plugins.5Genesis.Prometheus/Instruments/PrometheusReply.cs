@@ -96,7 +96,7 @@ namespace Tap.Plugins._5Genesis.Prometheus.Instruments
             }
 
             // Create columns for UNIX timestamp, local datetime and value
-            string name = metadata["__name__"] ?? "Prometheus result";
+            string name = metadata.ContainsKey("__name__") ? metadata["__name__"] : "Prometheus result";
             ResultColumn timestampColumn = new ResultColumn("Timestamp", timestamps.ToArray());
             ResultColumn datetimesColumn = new ResultColumn("DateTime", datetimes.ToArray());
             ResultColumn valuesColumn = new ResultColumn(name, values.ToArray());
