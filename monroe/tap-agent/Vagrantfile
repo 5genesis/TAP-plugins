@@ -1,7 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-# Requires circle and table-allocator deb files to be present on the Vagrantfile folder.
 # Builds monroe-experiment-core from the repository but takes the monroe-tap-agent files from this folder.
 
 Vagrant.configure("2") do |config|
@@ -16,40 +15,46 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
 
-    # Install dependencies
+    echo "Install dependencies"
     sed -i -e 's/main/main non-free/g' /etc/apt/sources.list
     export DEBIAN_FRONTEND=noninteractive && apt-get update
 
     apt-get -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
             --no-install-recommends --no-install-suggests --allow-unauthenticated install \
-            git curl jq ssh libuv1 libjson-c3 libjq1 libonig4 dnsutils dos2unix policykit-1
+            git curl jq ssh libuv1 libjson-c3 libjq1 libonig4 dnsutils dos2unix policykit-1 \
+            apt-transport-https
+
+    echo 'deb [trusted=yes] https://raw.githubusercontent.com/MONROE-PROJECT/apt-repo/master stretch main' > /etc/apt/sources.list.d/monroe.list
 
     mkdir /deb_files
-    cp /vagrant/*.deb /deb_files
 
-    # Install docker
+    echo "Install docker"
     curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh
 
-    # Build the Monroe-experiment-core (from repo)
+    echo "Build the Monroe-experiment-core (from repo)"
     git clone https://github.com/MONROE-PROJECT/monroe-experiment-core.git
     cd monroe-experiment-core
-    echo "TimeoutSec=infinity" >> ./core/lib/systemd/system/monroe-namespace.service
     ./build.sh  ./core /deb_files
 
-    # Build the Monroe-tap-agent (from the local version)
+    echo "Build the Monroe-tap-agent (from the local version)"
     mkdir /source
     cp -r /vagrant/* /source/
     cd /source
     dos2unix ./build.sh ./opt/monroe/tap-agent/monroe-tap-agent
     ./build.sh  /source /deb_files
 
-    # Install deb files and clean-up
+    echo "Install deb files and clean-up"
     apt install -y /deb_files/*.deb
     rm -r /source
     rm -r /deb_files
 
-    # Ensure that tap-agent service is running
-    systemctl start monroe-tap-agent
+    echo "Install certificates and start (from monroe-tap-agent.postinst)"
+    openssl req -x509 -newkey rsa:4096 -nodes -out /opt/monroe/tap-agent/cert.pem -keyout /opt/monroe/tap-agent/key.pem -days 3650 -subj "/O=Monroe Project/CN=localhost"
+    sed -i "s#TAP_AGENT_CERT=.*#TAP_AGENT_CERT=/opt/monroe/tap-agent/cert.pem#g" /opt/monroe/tap-agent/monroe-tap-agent
+    sed -i "s#TAP_AGENT_KEY=.*#TAP_AGENT_KEY=/opt/monroe/tap-agent/key.pem#g" /opt/monroe/tap-agent/monroe-tap-agent
+
+    systemctl enable monroe-tap-agent
+    systemctl start  monroe-tap-agent
 
   SHELL
 end
