@@ -7,11 +7,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0B5942DA-4595-4C59-83D3-B4ACFE5DC8F0}</ProjectGuid>
+    <ProjectGuid>{A86EF221-0E12-4E40-BED5-4258BC37FB24}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tap.Plugins._5Genesis.Main</RootNamespace>
-    <AssemblyName>Tap.Plugins.5Genesis.Main</AssemblyName>
+    <RootNamespace>Tap.Plugins._5Genesis.InfluxDB</RootNamespace>
+    <AssemblyName>Tap.Plugins.5Genesis.InfluxDB</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -48,39 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="package.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="README.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Tap.Plugins.5Genesis.InfluxDB\Tap.Plugins.5Genesis.InfluxDB.csproj">
-      <Project>{a86ef221-0e12-4e40-bed5-4258bc37fb24}</Project>
-      <Name>Tap.Plugins.5Genesis.InfluxDB</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tap.Plugins.5Genesis.Misc\Tap.Plugins.5Genesis.Misc.csproj">
-      <Project>{759ff8ce-a56e-477e-afb5-112c8bffd720}</Project>
-      <Name>Tap.Plugins.5Genesis.Misc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tap.Plugins.5Genesis.Monroe\Tap.Plugins.5Genesis.Monroe.csproj">
-      <Project>{8a02dc6b-7468-44c6-b4c9-c537777c017e}</Project>
-      <Name>Tap.Plugins.5Genesis.Monroe</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tap.Plugins.5Genesis.Prometheus\Tap.Plugins.5Genesis.Prometheus.csproj">
-      <Project>{ef7e2ba5-a502-4d43-aa5e-396592cfb9ee}</Project>
-      <Name>Tap.Plugins.5Genesis.Prometheus</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Tap.Plugins.5Genesis.SshInstrument\Tap.Plugins.5Genesis.SshInstrument.csproj">
-      <Project>{5d5f9833-544c-4874-a02d-5ca7a466af37}</Project>
-      <Name>Tap.Plugins.5Genesis.SshInstrument</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <UsingTask TaskName="Keysight.Tap.Sdk.MSBuild.PackageTask" AssemblyFile="$(TAP_PATH)\Keysight.Tap.Sdk.MSBuild.dll" />
-  <Target Name="AfterBuild" Condition="'$(Configuration)' == 'Release'">
-    <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
-      <Output TaskParameter="Assemblies" ItemName="TargetInfo" />
-    </GetAssemblyIdentity>
-    <PackageTask Dir="$(TAP_PATH)" ConfFile="$(ProjectDir)\package.xml" />
-  </Target>
 </Project>

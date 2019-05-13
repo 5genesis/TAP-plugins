@@ -77,7 +77,6 @@ namespace Tap.Plugins._5Genesis.Prometheus.Instruments
             Dictionary<string, string> metadata = new Dictionary<string, string>();
             foreach (var entry in result["metric"])
             {
-                System.Diagnostics.Debug.WriteLine($"{entry}");
                 metadata[entry.Name] = entry.Value.ToString();
             }
 
