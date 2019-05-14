@@ -52,10 +52,12 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
         protected void publishResults(MonroeReply reply)
         {
             foreach (Dictionary<string, string> dict in reply.Results)
+
+            foreach (Dictionary<string, IConvertible> dict in reply.Results)
             {
-                string name = dict.ContainsKey("DataId") ? dict["DataId"] : "MONROE Result";
+                string name = dict.ContainsKey("DataId") ? dict["DataId"].ToString() : "MONROE Result";
                 List<string> columns = new List<string>(dict.Count);
-                List<string> values = new List<string>(dict.Count);
+                List<IConvertible> values = new List<IConvertible>(dict.Count);
                 foreach (var item in dict)
                 {
                     columns.Add(item.Key);

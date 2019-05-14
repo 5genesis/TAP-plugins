@@ -83,7 +83,7 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
                             break;
                     }
 
-                    configuration.Add(item.Name, value);
+                    configuration.Add(item.Name, MonroeInstrument.JTokenToIConvertible(item.Value));
                 }
             }
 

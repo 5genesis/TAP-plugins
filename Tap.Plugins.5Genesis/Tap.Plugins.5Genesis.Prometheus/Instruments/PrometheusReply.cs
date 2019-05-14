@@ -83,7 +83,7 @@ namespace Tap.Plugins._5Genesis.Prometheus.Instruments
             // Extract "values". 
             List<double> timestamps = new List<double>();
             List<string> datetimes = new List<string>();
-            List<string> values = new List<string>();
+            List<string> values = new List<string>(); // TODO: Seems like prometheus sends all values as string, so the only option for getting a type is to try and parse them...
 
             foreach (var point in result["values"])
             {

@@ -138,5 +138,16 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
         {
             return SendRequest("/api/v1.0/experiment", Method.GET);
         }
+
+        public static IConvertible JTokenToIConvertible(JToken token)
+        {
+            switch (token.Type)
+            {
+                case JTokenType.Boolean: return token.ToObject<bool>();
+                case JTokenType.Integer: return token.ToObject<int>();
+                case JTokenType.Float: return token.ToObject<double>();
+                default: return token.ToString();
+            }
+        }
     }
 }

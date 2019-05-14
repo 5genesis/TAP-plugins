@@ -45,7 +45,7 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
             get { return ((int)Status >= 200) && ((int)Status <= 299); }
         }
 
-        public IEnumerable<Dictionary<string, string>> Results
+        public IEnumerable<Dictionary<string, IConvertible>> Results
         {
             get
             {
@@ -64,7 +64,7 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
             }
         }
 
-        private IEnumerable<Dictionary<string, string>> parseEntry(ZipArchiveEntry entry)
+        private IEnumerable<Dictionary<string, IConvertible>> parseEntry(ZipArchiveEntry entry)
         {
             StreamReader reader = new StreamReader(entry.Open());
             string line = string.Empty;
@@ -74,15 +74,17 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
             }
         }
 
-        private Dictionary<string, string> parseLine(string line)
+        private Dictionary<string, IConvertible> parseLine(string line)
         {
             JObject json = JObject.Parse(line);
-            Dictionary<string, string> result = new Dictionary<string, string>();
+            Dictionary<string, IConvertible> result = new Dictionary<string, IConvertible>();
             foreach (var item in json)
             {
-                result[item.Key.ToString()] = item.Value.ToString();
+                result[item.Key.ToString()] = MonroeInstrument.JTokenToIConvertible(item.Value);
             }
             return result;
         }
+        
+
     }
 }

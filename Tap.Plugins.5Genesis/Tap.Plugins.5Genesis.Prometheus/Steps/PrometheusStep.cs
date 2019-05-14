@@ -11,12 +11,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
+
 using Keysight.Tap;
-using System.Text.RegularExpressions;
 using Tap.Plugins._5Genesis.Prometheus.Instruments;
-using System.Net;
-using System.Xml.Serialization;
-using RestSharp;
+using Tap.Plugins._5Genesis.Misc.Extensions;
 
 namespace Tap.Plugins._5Genesis.Prometheus.Steps
 {
@@ -66,13 +64,10 @@ namespace Tap.Plugins._5Genesis.Prometheus.Steps
 
                 foreach (ResultTable resultTable in reply.Results)
                 {
-                    string name = resultTable.Name;
-                    List<string> columnNames = resultTable.Columns.Select(c => c.Name).ToList();
-
-                    Results.PublishTable(name, columnNames, resultTable.Columns.Select(c => c.Data).ToArray());
+                    resultTable.PublishToSource(Results);
 
                     long numResults = resultTable.Columns.First().Data.LongLength;
-                    Log.Info($"Published {numResults} results of type {name}");
+                    Log.Info($"Published {numResults} results of type {resultTable.Name}");
 
                     if (numResults > 0) { hasResults = true; }
                 }
