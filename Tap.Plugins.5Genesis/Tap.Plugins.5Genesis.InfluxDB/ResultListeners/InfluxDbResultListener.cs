@@ -17,6 +17,7 @@ using Keysight.Tap;
 using InfluxDB.LineProtocol.Client;
 using InfluxDB.LineProtocol.Payload;
 using Tap.Plugins._5Genesis.Misc.Extensions;
+using System.Security;
 
 namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 {
@@ -26,6 +27,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
     {
         private LineProtocolClient client = null;
         private DateTime startTime;
+        private Dictionary<string, string> baseTags = null;
 
         #region Settings
 
@@ -38,15 +40,23 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
         [Display("Database", Group: "InfluxDB", Order: 1.2)]
         public string Database { get; set; }
 
-        [Display("Save log messages", Group: "InfluxDB", Order: 1.3)]
+        [Display("User", Group: "InfluxDB", Order: 1.3)]
+        public string User { get; set; }
+
+        [Display("Password", Group: "InfluxDB", Order: 1.4)]
+        public SecureString Password { get; set; }
+
+        [Display("Save log messages", Group: "InfluxDB", Order: 1.5)]
         public bool HandleLog { get; set; }
 
-        [Display("Facility", Group: "Tags", Order: 2.0)]
+        [Display("Log levels", Group: "InfluxDB", Order: 1.6)]
         [EnabledIf("HandleLog", true)]
+        public LogLevel LogLevels { get; set; }
+
+        [Display("Facility", Group: "Tags", Order: 2.0)]
         public string Facility { get; set; }
 
         [Display("Host IP", Group: "Tags", Order: 2.1)]
-        [EnabledIf("HandleLog", true)]
         public string HostIP { get; set; }
 
         #endregion
@@ -57,13 +67,15 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
             Port = 8086;
             Database = "mydb";
             HandleLog = true;
-            Facility = HostIP = string.Empty;
+            User =  Facility = HostIP = string.Empty;
+            Password = new SecureString();
+            LogLevels = LogLevel.Info | LogLevel.Warning | LogLevel.Error;
         }
 
         public override void Open()
         {
             base.Open();
-            this.client = new LineProtocolClient(new Uri($"http://{Address}:{Port}"), Database, "admin", "admin"); //TODO
+            this.client = new LineProtocolClient(new Uri($"http://{Address}:{Port}"), Database, User, Password.GetString());
         }
 
         public override void Close()
@@ -76,7 +88,13 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
         {
             base.OnTestPlanRunStart(planRun);
 
-            startTime = planRun.StartTime.ToUniversalTime();
+            this.startTime = planRun.StartTime.ToUniversalTime();
+            this.baseTags = new Dictionary<string, string> {
+                { "appname", $"TAP ({TapVersion.GetTapEngineVersion().ToString()})" },
+                { "facility", Facility },
+                { "host", HostIP },
+                { "hostname", EngineSettings.Current.StationName }
+            };
         }
 
         public override void OnResultPublished(Guid stepRun, ResultTable result)
@@ -97,18 +115,14 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
             while ((line = reader.ReadLine()) != null)
             {
                 LogMessage message = LogMessage.FromLine(line);
-                if (message != null)
+                if (message != null && LogLevels.HasFlag(message.Level)) 
                 {
                     payload.Add(new LineProtocolPoint(
                         "syslog",
                         new Dictionary<string, object> { // fields
                             { "message", message.Text }
                         },
-                        new Dictionary<string, string> { // tags
-                            { "appname", $"TAP ({version})" },
-                            { "facility", Facility },
-                            { "host", HostIP },
-                            { "hostname", hostName },
+                        new Dictionary<string, string>(this.baseTags) { // tags
                             { "severity", message.SeverityCode }
                         },
                         startTime + message.Time)
@@ -118,11 +132,14 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
             }
 
             Log.Info($"Sending {count} log messages to {Name}");
-
-            LineProtocolWriteResult result = client.WriteAsync(payload).GetAwaiter().GetResult();
-            if (!result.Success)
+            try
             {
-                Log.Error($"Error while sending log messages: {result.ErrorMessage}");
+                LineProtocolWriteResult result = this.client.WriteAsync(payload).GetAwaiter().GetResult();
+                if (!result.Success) { throw new Exception(result.ErrorMessage); }
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Error while sending log messages: {e.Message}{(e.InnerException != null ? $" - {e.InnerException.Message}" : "")}");
             }
         }
     }
