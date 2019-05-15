@@ -21,6 +21,8 @@ namespace Tap.Plugins._5Genesis.Prometheus.Steps
     [Display("Publish Prometheus results", Groups: new string[] { "5Genesis", "Prometheus" })]
     public class PublishStep : TestStep
     {
+        public enum PeriodEnum { Relative, Absolute }
+
         #region Settings
 
         [Display("Instrument", Group: "Instrument", Order: 1.0)]
@@ -29,14 +31,23 @@ namespace Tap.Plugins._5Genesis.Prometheus.Steps
         [Display("Query", Group: "Request", Order: 2.0)]
         public string Query { get; set; }
 
-        [Display("Start", Group: "Request", Order: 2.1)]
+        [Display("Period Mode", Group: "Request", Order: 2.1)]
+        public PeriodEnum PeriodMode { get; set; }
+
+        [Display("Past", Group: "Request", Order: 2.2)]
+        [EnabledIf("PeriodMode", PeriodEnum.Relative, HideIfDisabled = true)]
+        public TimeSpan RelativePeriod { get; set; }
+
+        [Display("Start", Group: "Request", Order: 2.2)]
+        [EnabledIf("PeriodMode", PeriodEnum.Absolute, HideIfDisabled = true)]
         public DateTime Start { get; set; }
 
-        [Display("End", Group: "Request", Order: 2.2)]
+        [Display("End", Group: "Request", Order: 2.3)]
+        [EnabledIf("PeriodMode", PeriodEnum.Absolute, HideIfDisabled = true)]
         public DateTime End { get; set; }
 
         [Unit("s")]
-        [Display("Step", Group: "Request", Order: 2.3)]
+        [Display("Step", Group: "Request", Order: 2.4)]
         public double Step { get; set; }
 
         [Display("Set Verdict on Error", Group: "Verdict", Order: 99.0,
@@ -48,6 +59,8 @@ namespace Tap.Plugins._5Genesis.Prometheus.Steps
         public PublishStep()
         {
             Query = "collectd_enb_cpu_vcpu{enb_cpu=\"cpu\",exported_instance=\"10.2.1.10\"}";
+            PeriodMode = PeriodEnum.Relative;
+            RelativePeriod = new TimeSpan(0, 15, 0);
             Start = DateTime.UtcNow.AddMinutes(-15);
             End = DateTime.UtcNow;
             Step = 5.0;
@@ -56,7 +69,10 @@ namespace Tap.Plugins._5Genesis.Prometheus.Steps
         
         public override void Run()
         {
-            PrometheusReply reply = Instrument.GetResults(Query, Start, End, Step);
+            DateTime start = (PeriodMode == PeriodEnum.Absolute) ? Start : DateTime.UtcNow - RelativePeriod;
+            DateTime end = (PeriodMode == PeriodEnum.Absolute) ? End : DateTime.UtcNow;
+
+            PrometheusReply reply = Instrument.GetResults(Query, start, end, Step);
 
             if (reply.Success)
             {
