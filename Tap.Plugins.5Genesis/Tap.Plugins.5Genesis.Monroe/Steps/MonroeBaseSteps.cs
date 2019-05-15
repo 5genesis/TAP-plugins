@@ -54,6 +54,7 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
         {
             // Save all results to a temporal List
             List<Dictionary<string, IConvertible>> allResults = new List<Dictionary<string, IConvertible>>(reply.Results);
+            bool hasResults = false;
 
             // Separate all results in different lists by name
             var resultsByName = new Dictionary<string, List<Dictionary<string, IConvertible>>>();
@@ -88,14 +89,20 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
                     {
                         values.Add( dict.ContainsKey(columnName) ? dict[columnName] : null );
                     }
-                    values.Add(null);
 
                     resultColumns.Add(new ResultColumn(columnName, values.ToArray()));
                 }
 
                 ResultTable resultTable = new ResultTable(name, resultColumns.ToArray());
-                resultTable.PublishToSource(Results);
+
+                if (resultTable.Rows != 0)
+                {
+                    resultTable.PublishToSource(Results);
+                    Log.Info($"Published {resultTable.Rows} results of type {resultTable.Name}");
+                    hasResults = true;
+                }
             }
+            if (!hasResults) { Log.Warning("No results have been retrieved."); }
         }
     }
 

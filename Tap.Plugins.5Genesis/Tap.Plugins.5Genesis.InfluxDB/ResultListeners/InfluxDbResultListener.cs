@@ -114,13 +114,12 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                     }
                     payload.Add(new LineProtocolPoint(result.Name, fields, this.baseTags, maybeDatetime.Value));
                     count++;
-                    Log.Info(maybeDatetime.Value.ToString());
                 }
                 else { ignored++; }
             }
 
             if (ignored != 0) { Log.Warning($"Ignored {ignored}/{result.Rows} results from table {result.Name}: Could not parse Timestamp"); }
-            this.sendPayload(payload, count);
+            this.sendPayload(payload, count, $"results ({result.Name})");
 
             OnActivity();
         }
@@ -198,12 +197,12 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                     count++;
                 }
             }
-            this.sendPayload(payload, count);
+            this.sendPayload(payload, count, "log messages");
         }
 
-        private void sendPayload(LineProtocolPayload payload, int count)
+        private void sendPayload(LineProtocolPayload payload, int count, string kind)
         {
-            Log.Info($"Sending {count} log messages to {Name}");
+            Log.Info($"Sending {count} {kind} to {Name}");
             try
             {
                 LineProtocolWriteResult result = this.client.WriteAsync(payload).GetAwaiter().GetResult();
@@ -211,7 +210,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
             }
             catch (Exception e)
             {
-                Log.Error($"Error while sending log messages: {e.Message}{(e.InnerException != null ? $" - {e.InnerException.Message}" : "")}");
+                Log.Error($"Error while sending payload: {e.Message}{(e.InnerException != null ? $" - {e.InnerException.Message}" : "")}");
             }
         }
     }

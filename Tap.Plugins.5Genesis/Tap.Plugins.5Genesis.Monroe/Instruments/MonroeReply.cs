@@ -84,7 +84,5 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
             }
             return result;
         }
-        
-
     }
 }
