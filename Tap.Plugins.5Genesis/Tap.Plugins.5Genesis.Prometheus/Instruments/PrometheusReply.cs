@@ -83,7 +83,7 @@ namespace Tap.Plugins._5Genesis.Prometheus.Instruments
             // Extract "values". 
             List<double> timestamps = new List<double>();
             List<string> datetimes = new List<string>();
-            List<string> values = new List<string>(); // TODO: Seems like prometheus sends all values as string, so the only option for getting a type is to try and parse them...
+            List<IConvertible> values = new List<IConvertible>();
 
             foreach (var point in result["values"])
             {
@@ -91,7 +91,7 @@ namespace Tap.Plugins._5Genesis.Prometheus.Instruments
                 DateTime datetime = DateTimeOffset.FromUnixTimeMilliseconds((long)(timestamp * 1000)).DateTime;
                 timestamps.Add(timestamp);
                 datetimes.Add(datetime.ToString(PrometheusInstrument.TimeFormat));
-                values.Add(point.Last.ToString());
+                values.Add(this.toIConvertible(point.Last.ToString()));
             }
 
             // Create columns for UNIX timestamp, local datetime and value
@@ -111,6 +111,14 @@ namespace Tap.Plugins._5Genesis.Prometheus.Instruments
             resultColumns.AddRange(new ResultColumn[] { timestampColumn, datetimesColumn, valuesColumn });
 
             return new ResultTable(name, resultColumns.ToArray());
+        }
+
+        private IConvertible toIConvertible(string value)
+        {
+            if (long.TryParse(value, out long parsedLong)) { return parsedLong; }
+            if (double.TryParse(value, out double parsedDouble)) { return parsedDouble; }
+            if (bool.TryParse(value, out bool parsedBool)) { return parsedBool; }
+            return value;
         }
     }
 }
