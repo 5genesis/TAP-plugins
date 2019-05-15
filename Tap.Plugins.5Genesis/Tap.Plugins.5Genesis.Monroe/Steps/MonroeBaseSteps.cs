@@ -14,6 +14,7 @@ using System.ComponentModel;
 using Keysight.Tap;
 
 using Tap.Plugins._5Genesis.Monroe.Instruments;
+using Tap.Plugins._5Genesis.Misc.Extensions;
 using System.Text.RegularExpressions;
 
 namespace Tap.Plugins._5Genesis.Monroe.Steps
@@ -51,20 +52,49 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
 
         protected void publishResults(MonroeReply reply)
         {
-            foreach (Dictionary<string, string> dict in reply.Results)
+            // Save all results to a temporal List
+            List<Dictionary<string, IConvertible>> allResults = new List<Dictionary<string, IConvertible>>(reply.Results);
 
-            foreach (Dictionary<string, IConvertible> dict in reply.Results)
+            // Separate all results in different lists by name
+            var resultsByName = new Dictionary<string, List<Dictionary<string, IConvertible>>>();
+            foreach (Dictionary<string, IConvertible> dict in allResults)
             {
                 string name = dict.ContainsKey("DataId") ? dict["DataId"].ToString() : "MONROE Result";
-                List<string> columns = new List<string>(dict.Count);
-                List<IConvertible> values = new List<IConvertible>(dict.Count);
-                foreach (var item in dict)
+                if (!resultsByName.ContainsKey(name)) { resultsByName[name] = new List<Dictionary<string, IConvertible>>(); }
+
+                resultsByName[name].Add(dict);
+            }
+
+            // Create a different ResultTable for every kind of result
+            foreach (var resultList in resultsByName)
+            {
+                string name = resultList.Key;
+
+                // Create all possible column names only once
+                List<string> columnNames = new List<string>();
+                foreach (Dictionary<string, IConvertible> dict in resultList.Value)
                 {
-                    columns.Add(item.Key);
-                    values.Add(item.Value);
+                    foreach (string key in dict.Keys) { if (!columnNames.Contains(key)) { columnNames.Add(key); } }
                 }
 
-                Results.Publish(name, columns, values.ToArray());
+                List<ResultColumn> resultColumns = new List<ResultColumn>();
+
+                // Create all columns, fill empty spaces with null
+                foreach (string columnName in columnNames)
+                {
+                    List<IConvertible> values = new List<IConvertible>();
+
+                    foreach (Dictionary<string, IConvertible> dict in resultList.Value)
+                    {
+                        values.Add( dict.ContainsKey(columnName) ? dict[columnName] : null );
+                    }
+                    values.Add(null);
+
+                    resultColumns.Add(new ResultColumn(columnName, values.ToArray()));
+                }
+
+                ResultTable resultTable = new ResultTable(name, resultColumns.ToArray());
+                resultTable.PublishToSource(Results);
             }
         }
     }
