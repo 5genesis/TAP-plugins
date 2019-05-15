@@ -99,7 +99,75 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 
         public override void OnResultPublished(Guid stepRun, ResultTable result)
         {
+            LineProtocolPayload payload = new LineProtocolPayload();
+            int ignored = 0, count = 0;
+
+            foreach (Dictionary<string, IConvertible> row in getRows(result))
+            {
+                DateTime? maybeDatetime = getDateTime(row);
+                if (maybeDatetime.HasValue)
+                {
+                    Dictionary<string, object> fields = new Dictionary<string, object>();
+                    foreach (KeyValuePair<string, IConvertible> item in row)
+                    {
+                        fields[item.Key] = item.Value;
+                    }
+                    payload.Add(new LineProtocolPoint(result.Name, fields, this.baseTags, maybeDatetime.Value));
+                    count++;
+                    Log.Info(maybeDatetime.Value.ToString());
+                }
+                else { ignored++; }
+            }
+
+            if (ignored != 0) { Log.Warning($"Ignored {ignored}/{result.Rows} results from table {result.Name}: Could not parse Timestamp"); }
+            this.sendPayload(payload, count);
+
             OnActivity();
+        }
+
+        private DateTime? getDateTime(Dictionary<string, IConvertible> dict)
+        {
+            // Try to find the timestamp key
+            List<string> keys = new List<string>(dict.Keys);
+            string timestampKey = keys.Find((key) => (key.ToUpper() == "TIMESTAMP"));
+
+            if (timestampKey != null)
+            {
+                IConvertible value = dict[timestampKey];
+
+                if (value != null)
+                {
+                    long milliseconds;
+
+                    switch (value.GetTypeCode())
+                    {
+                        case TypeCode.Int16: case TypeCode.Int32: case TypeCode.Int64:
+                        case TypeCode.UInt16: case TypeCode.UInt32: case TypeCode.UInt64:
+                            milliseconds = value.ToInt64(null);
+                            break;
+                        case TypeCode.Double:
+                            milliseconds = (long)(value.ToDouble(null) * 1000);
+                            break;
+                        default: return null;
+                    }
+                    return DateTimeOffset.FromUnixTimeMilliseconds(milliseconds).UtcDateTime;
+                }
+            }
+            return null;
+        }
+
+        private IEnumerable<Dictionary<string, IConvertible>> getRows(ResultTable table)
+        {
+            for (int r = 0; r < table.Rows; r++)
+            {
+                Dictionary<string, IConvertible> res = new Dictionary<string, IConvertible>();
+                for (int c = 0; c < table.Columns.Length; c++)
+                {
+                    ResultColumn column = table.Columns.ElementAt(c);
+                    res[column.Name] = (IConvertible)column.Data.GetValue(r);
+                }
+                yield return res;
+            }
         }
 
         public override void OnTestPlanRunCompleted(TestPlanRun planRun, Stream logStream)
@@ -130,7 +198,11 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                     count++;
                 }
             }
+            this.sendPayload(payload, count);
+        }
 
+        private void sendPayload(LineProtocolPayload payload, int count)
+        {
             Log.Info($"Sending {count} log messages to {Name}");
             try
             {
