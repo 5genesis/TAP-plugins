@@ -46,10 +46,12 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
         [Display("Password", Group: "InfluxDB", Order: 1.4)]
         public SecureString Password { get; set; }
 
-        [Display("Save log messages", Group: "InfluxDB", Order: 1.5)]
+        [Display("Save log messages", Group: "InfluxDB", Order: 1.5, 
+            Description: "Send TAP log messages to InfluxDB after testplan execution.")]
         public bool HandleLog { get; set; }
 
-        [Display("Log levels", Group: "InfluxDB", Order: 1.6)]
+        [Display("Log levels", Group: "InfluxDB", Order: 1.6, 
+            Description: "Filter sent messages by severity level.")]
         [EnabledIf("HandleLog", true)]
         public LogLevel LogLevels { get; set; }
 

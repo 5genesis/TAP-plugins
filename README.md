@@ -20,6 +20,24 @@ All new files to package must be included in the `package.xml` file of the *Main
 
 ## Included Plugins
 
+### Tap.Plugins.5Genesis.InfluxDB
+
+Provides a new result listener that is able to send all generated TAP results to an InfluxDB instance. 
+All columns from the original results are sent as `fields`, while some information about the host machine and TAP instance are sent as `tags`.
+The result listener is also able to send the generated TAP logs to InfluxDB, with a format compatible with [Chronograf](https://www.influxdata.com/time-series-platform/chronograf/)'s log viewer.  
+> Important: The result listener expects to find a column named `Timestamp` (case ignored) in order to know the timestamp that corresponds to each row.
+>
+> The format of this column can be the number of seconds since the Epoch as a floating point value, or the number of milliseconds as an integer.
+
+### Tap.Plugins.5Genesis.Monroe
+
+Provides instruments and steps for handling a MONROE instance. Includes steps for deploying (and starting), stopping and retrieving results from experiments. Results will be published as TAP results.
+> The current result parser is only prepared for working with `monroe/ping` experiments. 
+
+### Tap.Plugins.5Genesis.Prometheus
+
+Provides an instrument and a step for retrieving results from a Prometheus instance. The step can be configured for performing any query using PromQL, and time range can be specified either as an absolute start/end or relative to the current time.
+
 ### Tap.Plugins.5Genesis.SshInstrument
 
 Provides functionality for sending commands through SSH and transfering files/folders from the remote machine using SCP. Usage samples can be found at `(TAPPath)/5Genesis/Samples/SSH_Sample.TapPlan`.
