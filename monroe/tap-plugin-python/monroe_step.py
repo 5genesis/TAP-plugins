@@ -2,7 +2,7 @@
 Copyright (C) 2019 Fraunhofer FOKUS
 '''
 
-''' Adapted by Mohammad Rajiullah from Ranjan Shrestha (ranjan.shrestha@fokus.fraunhofer.de) '''
+''' Created by Ranjan Shrestha (ranjan.shrestha@fokus.fraunhofer.de) '''
 
 __author__ = 'rsh'
 __version__ = '0.0.1'
@@ -11,6 +11,8 @@ __version__ = '0.0.1'
 from .imports import *
 from netaddr import valid_ipv4
 from .monroe_methods import MONROE
+
+# install package: netaddr -> pip install netaddr
 
 @Attribute(Keysight.Tap.DisplayAttribute, "Monroe Experiment", "Monroe Experiment", "Monroe Virtual Node")
 @Attribute(Keysight.Tap.AllowAnyChildAttribute)
@@ -42,12 +44,22 @@ class MonroeExperiment(TestStep):
 		duration_prop.AddAttribute(Keysight.Tap.DisplayAttribute, "Duration of experiment", "Duration of experiment", Group="Monroe Configuration", Order=2.6)		
 		duration_prop.AddAttribute(Keysight.Tap.UnitAttribute, "s")
 
-		iperfv_prop = self.AddProperty("iperfv", None, String)
+		self.iperfversion_options = ["3", "2"]
+		monroe_iperfversions_dot_net = Array[str](self.iperfversion_options)
+		self.AddProperty("iperfver_options_hidden", monroe_iperfversions_dot_net, Array).AddAttribute(BrowsableAttribute, False)
+
+		iperfv_prop = self.AddProperty("iperfv", self.iperfversion_options[0], String)
 		iperfv_prop.AddAttribute(Keysight.Tap.DisplayAttribute, "IPerf version", "IPerf version", Group="Monroe Configuration", Order=2.8)
+		iperfv_prop.AddAttribute(Keysight.Tap.AvailableValuesAttribute, "iperfver_options_hidden")		
 		iperfv_prop.AddAttribute(Keysight.Tap.EnabledIfAttribute, "script", self.monroe_containers[1], HideIfDisabled=True)
 
-		iperf_proto_prop = self.AddProperty("iperf_proto", None, String)
+		self.iperfproto_options = ["TCP", "UDP"]
+		monroe_iperfproto_dot_net = Array[str](self.iperfproto_options)
+		self.AddProperty("iperfproto_options_hidden", monroe_iperfproto_dot_net, Array).AddAttribute(BrowsableAttribute, False)
+
+		iperf_proto_prop = self.AddProperty("iperf_proto", self.iperfproto_options[0], String)
 		iperf_proto_prop.AddAttribute(Keysight.Tap.DisplayAttribute, "IPerf protocol", "IPerf protocol", Group="Monroe Configuration", Order=2.9)
+		iperf_proto_prop.AddAttribute(Keysight.Tap.AvailableValuesAttribute, "iperfproto_options_hidden")
 		iperf_proto_prop.AddAttribute(Keysight.Tap.EnabledIfAttribute, "script", self.monroe_containers[1], HideIfDisabled=True)
 
 		# VNF configurations
@@ -138,7 +150,7 @@ class MonroeExperiment(TestStep):
 
 		# Send the experiment request
 		response = MONROE.send_request(monroe_config, self.duration, self.agent_port, client, server)
-		print response
+		
 		if response['status'] == RESPONSE_STATUS.OK:
 			self.Info('Monroe experiment is successful.')
 			self.Info("{0}", response['result']['str'])
@@ -148,14 +160,15 @@ class MonroeExperiment(TestStep):
 			self.Error("{0}", response['result']['str'])
 			self.UpgradeVerdict(Keysight.Tap.Verdict.Error)
 
-
-	def is_json(self, myjson):
+	''' Check if the object is a json object '''
+	def is_json(self, json_obj):
 		try:
-			json_object = json.loads(myjson)
+			json_object = json.loads(json_obj)
 		except ValueError, e:
 			return False
 		
 		return True
 
+	''' Validates a string as an IP '''
 	def check_if_ip(self, inputstr):
 		return valid_ipv4(inputstr)

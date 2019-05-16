@@ -20,7 +20,7 @@ class OpenBatonDestroyResource(TestStep):
         super(OpenBatonDestroyResource, self).__init__()
         
         # Add the Instrument
-        self.AddProperty("Instrument", None, Instrument).AddAttribute(Keysight.Tap.DisplayAttribute, "Instrument", "Instrument", Group="Instrument", Order=1)
+        self.AddProperty("Instrument", None, OpenBatonInstrument).AddAttribute(Keysight.Tap.DisplayAttribute, "OpenBaton Instrument", "OpenBaton Instrument", Group="Instrument", Order=1)
 
         # VNF Configuration
         delete_all_vnf_prop = self.AddProperty("delete_all_vnfs", True, Boolean)

@@ -22,37 +22,9 @@ class MONROE:
 		monroe_expt_response = {}
 		url = None
 		
-		if not client["status"]:
-			try:
-				res = STATIC_METHODS.uniqueId_Ips_mapping[client["id"]]
-				
-				client_floating_ip = res["vnf_floating_ip"]
-			except KeyError:
-				print("Could not find the VNF ID {0} in the mapping.", client["id"])
-				monroe_expt_response = {
-				    'status': RESPONSE_STATUS.ERROR,
-				    'result': {
-				        'str': ' '.join(["Could not find the VNF ID", client["id"], "in the mapping."])
-				    }
-				}
-		else:
-			client_floating_ip = client["id"]
+		client_floating_ip, monroe_expt_response = STATIC_METHODS.get_client_ip(client)
+		server_ip, _, monroe_expt_response = STATIC_METHODS.get_server_ip(server)
 
-
-		if not server["status"]:
-			try:
-				res = STATIC_METHODS.uniqueId_Ips_mapping[server["id"]]
-				server_ip = res["vnf_ip"]
-			except KeyError:
-				print("Could not find the VNF ID {0} in the mapping", server["id"])
-				monroe_expt_response = {
-				    'status': RESPONSE_STATUS.ERROR,
-				    'result': {
-				        'str': ' '.join(["Could not find the VNF ID", server["id"], "in the mapping."])
-				    }
-				}
-		else:
-			server_ip = server["id"]
 
 		if "status" in monroe_expt_response and monroe_expt_response["status"] == RESPONSE_STATUS.ERROR:
 			return monroe_expt_response

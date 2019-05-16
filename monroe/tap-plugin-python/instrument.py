@@ -20,9 +20,9 @@ import grequests  # async http calls
 
 @Attribute(Keysight.Tap.DisplayAttribute, "OpenBaton", "Interface to OpenBaton and OpenStack", "Open Baton")
 @Attribute(ShortNameAttribute, "OpenBaton")        
-class Instrument(Instrument):
+class OpenBatonInstrument(Instrument):
     def __init__(self):
-        super(Instrument, self).__init__()
+        super(OpenBatonInstrument, self).__init__()
 
         # Openbaton IP Address
         ob_ip = self.AddProperty("openbaton_ip", "127.0.0.1", String)
@@ -37,7 +37,7 @@ class Instrument(Instrument):
         ob_username.AddAttribute(Keysight.Tap.DisplayAttribute, "Username", "Open Baton Login: Username", Group="Open Baton", Order=1.3)
 
         # Open Baton Password
-        ob_password = self.AddProperty("openbaton_password", None, String)
+        ob_password = self.AddProperty("openbaton_password", None, Security.SecureString)
         ob_password.AddAttribute(Keysight.Tap.DisplayAttribute, "Password", "Open Baton Login: Password", Group="Open Baton", Order=1.4)
 
         # OpenStack IP Address
@@ -53,7 +53,7 @@ class Instrument(Instrument):
         os_username.AddAttribute(Keysight.Tap.DisplayAttribute, "Username", "OpenStack Login: Username", Group="Open Stack", Order=2.3)
 
         # OpenStack Password
-        os_password = self.AddProperty("openstack_password", None, String)
+        os_password = self.AddProperty("openstack_password", None, Security.SecureString)
         os_password.AddAttribute(Keysight.Tap.DisplayAttribute, "Password", "OpenStack Login: Password", Group="Open Stack", Order=2.4)
 
         # OpenStack Tenant ID
@@ -74,6 +74,10 @@ class Instrument(Instrument):
 
     
     def get_all_credentials(self,):
+        # convert the secure password to the plain string
+        self.openstack_password = System.Net.NetworkCredential(System.String.Empty, self.openstack_password).Password
+        self.openbaton_password = System.Net.NetworkCredential(System.String.Empty, self.openbaton_password).Password
+
         openbaton = {
             "openbaton_ip": self.openbaton_ip,
             "openbaton_port": self.openbaton_port,

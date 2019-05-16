@@ -13,7 +13,8 @@ from .imports import *
 from .instrument import *
 from .ob_allocate_methods import OB_RESOURCES_ALLOCATE
 from .static_methods import STATIC_METHODS
-
+#import pickle
+from time import sleep
 
 @Attribute(Keysight.Tap.DisplayAttribute, "Deploy VNF", Description="Allocate VNF Resources", Group="Open Baton")
 @Attribute(Keysight.Tap.AllowAnyChildAttribute)
@@ -26,7 +27,7 @@ class OpenBatonAllocateResource(TestStep):
         project_id.AddAttribute(Keysight.Tap.DisplayAttribute, "Project ID", Description="Project ID", Group="OpenBaton Project ID", Order=2, Collapsed=False)
 
         # Create a Availability Zones dot net Array property and make it hidden
-        availability_zones = ["AZ1", "AZ2"]
+        availability_zones = ["AZ1", "AZ2", "AZ3"]
         availability_zones_dot_net = Array[str](availability_zones)
         self.AddProperty("az_hidden", availability_zones_dot_net, Array).AddAttribute(BrowsableAttribute, False) # Hide the property
 
@@ -43,9 +44,18 @@ class OpenBatonAllocateResource(TestStep):
         generated_id = str(uuid.uuid4().hex)
         vnf_pkg_unique_id_prop = self.AddProperty("vnf_pkg_unique_id", generated_id, String)
         vnf_pkg_unique_id_prop.AddAttribute(Keysight.Tap.DisplayAttribute, "VNF Unique ID", "Provide a VNF Unique ID", Group="Upload VNF Package", Order=4.3)
+
+        ''' VNF Configuration '''
+        vnf_enable_parallel_deploy_prop = self.AddProperty("enable_parallel_exec", False, Boolean)
+        vnf_enable_parallel_deploy_prop.AddAttribute(Keysight.Tap.DisplayAttribute, "Enable parallel deployment", "Enable parallel deployment", Group="VNF Deployment", Order=5.1)
+
+        vnf_wait_time_prop = self.AddProperty("wait_time_for_deploy", 0, Int32)
+        vnf_wait_time_prop.AddAttribute(Keysight.Tap.DisplayAttribute, "Wait time", "Wait time before querying for VIM Instance", Group="VNF Deployment", Order=5.2)
+        vnf_wait_time_prop.AddAttribute(Keysight.Tap.EnabledIfAttribute, "enable_parallel_exec", HideIfDisabled=True)
+        vnf_wait_time_prop.AddAttribute(Keysight.Tap.UnitAttribute, "s")
         
         # Add the Instrument
-        self.AddProperty("Instrument", None, Instrument).AddAttribute(Keysight.Tap.DisplayAttribute, "Instrument", "Instrument", Group="Instrument", Order=1)
+        self.AddProperty("OBInstrument", None, OpenBatonInstrument).AddAttribute(Keysight.Tap.DisplayAttribute, "OpenBaton Instrument", "OpenBaton Instrument", Group="Instrument", Order=1)
 
     def PrePlanRun(self,):
         super(OpenBatonAllocateResource, self).PrePlanRun()
@@ -56,6 +66,17 @@ class OpenBatonAllocateResource(TestStep):
         if not self.project_id:
             self.Error('Project Id not present or of not string type')
             status = True
+
+        if not self.vnf_pkg_path:
+            self.Error('VNF package path is not present or empty')
+            status = True
+
+        if not self.vnf_pkg_unique_id:
+            self.Error('VNF package unique id is not present or empty')
+            status = True
+
+        if not self.enable_parallel_exec:
+            self.wait_time_for_deploy = 0;
                 
         if status:
             self.UpgradeVerdict(Keysight.Tap.Verdict.Error)
@@ -67,7 +88,7 @@ class OpenBatonAllocateResource(TestStep):
     def Run(self):
         super(OpenBatonAllocateResource, self).Run()
 
-        openbaton_credentials, openstack_credentials, zabbix_config = self.Instrument.get_all_credentials()
+        openbaton_credentials, openstack_credentials, zabbix_config = self.OBInstrument.get_all_credentials()
 
         ob_allocate = OB_RESOURCES_ALLOCATE(openbaton_credentials, 
                                     openstack_credentials, 
@@ -77,8 +98,12 @@ class OpenBatonAllocateResource(TestStep):
 
         if response_token['status'] == RESPONSE_STATUS.OK:
             token_id = response_token['result']['token']
-            ob_allocate.set_header_configs(token_id, self.project_id)
-            STATIC_METHODS.set_header_configs(token_id, self.project_id)
+            ob_allocate.set_header_configs(token_id, self.project_id) # Setting the header configs of the request
+            STATIC_METHODS.set_header_configs(token_id, self.project_id) # Store header configs of the request in a static function so it can be accessed by the Class
+            # Sleep to allow check for vim instances during parallel VNF deployment
+            if self.wait_time_for_deploy:
+                self.Debug("Waiting time is {0} s before queryiny VIM Instance", self.wait_time_for_deploy)
+                sleep(self.wait_time_for_deploy)
             # Check if VIM Instance already exist
             response_check_vim_instance = ob_allocate.get_vim_instance()
             self.Debug("Checking if a VIM Instance already exist.")
@@ -104,7 +129,7 @@ class OpenBatonAllocateResource(TestStep):
                 response_vnf_pkg = ob_allocate.upload_vnf_package(file)
                 
                 if response_vnf_pkg['status'] == RESPONSE_STATUS.OK:    
-                    # Create NSD #nsd_id
+                    # Create NSD
                     STATIC_METHODS.set_vnf_pkg_ids(self.vnf_pkg_unique_id, response_vnf_pkg['result']['vnf_pkg_id'])
                     response_nsd = ob_allocate.create_nsd([response_vnf_pkg['result']['vnfd_id']])
                     
@@ -114,7 +139,7 @@ class OpenBatonAllocateResource(TestStep):
                             "vim_name": response_vim_instance['result']['vim_name'], 
                             "zone": self.availability_zone
                         }
-                        STATIC_METHODS.set_nsd_ids(self.vnf_pkg_unique_id, response_nsd["result"]["nsd_id"])
+                        STATIC_METHODS.set_nsd_ids(self.vnf_pkg_unique_id, response_nsd["result"]["nsd_id"]) # Store the items to the static variables
                         response_launch_nsd = ob_allocate.launch_nsd(response_nsd['result']['nsd_id'], 
                                                     vnf, 
                                                     [response_vnf_pkg['result']['vnf_pkg_name']])

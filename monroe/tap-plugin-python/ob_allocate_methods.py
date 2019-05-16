@@ -48,8 +48,8 @@ class OB_RESOURCES_ALLOCATE:
 		}
 
 		data = {
-    		'username': self.openbaton_username, #admin
-			'password': self.openbaton_password, #Openbaton1
+    		'username': self.openbaton_username, 
+			'password': self.openbaton_password,
 			'grant_type': 'password'
 		}
 
@@ -108,10 +108,10 @@ class OB_RESOURCES_ALLOCATE:
 		data = json.dumps({
 			"name": vim_instance_name,
 			"authUrl": ''.join(['http://', self.openstack_ip, ':', str(self.openstack_port), '/v3']),
-			"tenant": self.openstack_tenant_id, #"3f26abc8928049838ad011e7e0455182",
-			"username": self.openstack_username, #"admin",
-			"password": self.openstack_password, #"b527085a6c8c486e",
-			"keyPair": self.openstack_keypair_id, #"5genesis",
+			"tenant": self.openstack_tenant_id, 
+			"username": self.openstack_username,
+			"password": self.openstack_password,
+			"keyPair": self.openstack_keypair_id,
 			"securityGroups": [
 				"default"
 			],
