@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.Misc",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.Prometheus", "Tap.Plugins.5Genesis.Prometheus\Tap.Plugins.5Genesis.Prometheus.csproj", "{EF7E2BA5-A502-4D43-AA5E-396592CFB9EE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.InfluxDB", "Tap.Plugins.5Genesis.InfluxDB\Tap.Plugins.5Genesis.InfluxDB.csproj", "{A86EF221-0E12-4E40-BED5-4258BC37FB24}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{EF7E2BA5-A502-4D43-AA5E-396592CFB9EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF7E2BA5-A502-4D43-AA5E-396592CFB9EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF7E2BA5-A502-4D43-AA5E-396592CFB9EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A86EF221-0E12-4E40-BED5-4258BC37FB24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A86EF221-0E12-4E40-BED5-4258BC37FB24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A86EF221-0E12-4E40-BED5-4258BC37FB24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A86EF221-0E12-4E40-BED5-4258BC37FB24}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

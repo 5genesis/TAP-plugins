@@ -77,14 +77,13 @@ namespace Tap.Plugins._5Genesis.Prometheus.Instruments
             Dictionary<string, string> metadata = new Dictionary<string, string>();
             foreach (var entry in result["metric"])
             {
-                System.Diagnostics.Debug.WriteLine($"{entry}");
                 metadata[entry.Name] = entry.Value.ToString();
             }
 
             // Extract "values". 
             List<double> timestamps = new List<double>();
             List<string> datetimes = new List<string>();
-            List<string> values = new List<string>();
+            List<IConvertible> values = new List<IConvertible>();
 
             foreach (var point in result["values"])
             {
@@ -92,7 +91,7 @@ namespace Tap.Plugins._5Genesis.Prometheus.Instruments
                 DateTime datetime = DateTimeOffset.FromUnixTimeMilliseconds((long)(timestamp * 1000)).DateTime;
                 timestamps.Add(timestamp);
                 datetimes.Add(datetime.ToString(PrometheusInstrument.TimeFormat));
-                values.Add(point.Last.ToString());
+                values.Add(this.toIConvertible(point.Last.ToString()));
             }
 
             // Create columns for UNIX timestamp, local datetime and value
@@ -112,6 +111,14 @@ namespace Tap.Plugins._5Genesis.Prometheus.Instruments
             resultColumns.AddRange(new ResultColumn[] { timestampColumn, datetimesColumn, valuesColumn });
 
             return new ResultTable(name, resultColumns.ToArray());
+        }
+
+        private IConvertible toIConvertible(string value)
+        {
+            if (long.TryParse(value, out long parsedLong)) { return parsedLong; }
+            if (double.TryParse(value, out double parsedDouble)) { return parsedDouble; }
+            if (bool.TryParse(value, out bool parsedBool)) { return parsedBool; }
+            return value;
         }
     }
 }
