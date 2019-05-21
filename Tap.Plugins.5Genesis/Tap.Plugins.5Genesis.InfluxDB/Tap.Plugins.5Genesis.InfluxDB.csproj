@@ -55,6 +55,7 @@
     <Compile Include="ResultListeners\LogLevel.cs" />
     <Compile Include="ResultListeners\LogMessage.cs" />
     <Compile Include="ResultListeners\InfluxDbResultListener.cs" />
+    <Compile Include="Steps\SetExperimentIdStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

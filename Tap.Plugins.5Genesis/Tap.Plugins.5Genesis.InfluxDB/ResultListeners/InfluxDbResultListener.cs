@@ -18,6 +18,7 @@ using InfluxDB.LineProtocol.Client;
 using InfluxDB.LineProtocol.Payload;
 using Tap.Plugins._5Genesis.Misc.Extensions;
 using System.Security;
+using System.Xml.Serialization;
 
 namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 {
@@ -28,6 +29,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
         private LineProtocolClient client = null;
         private DateTime startTime;
         private Dictionary<string, string> baseTags = null;
+        private bool experimentIdWarning = false;
 
         #region Settings
 
@@ -61,7 +63,16 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
         [Display("Host IP", Group: "Tags", Order: 2.1)]
         public string HostIP { get; set; }
 
+        [Display("Set Experiment ID", Group: "5Genesis", Order: 3.0,
+            Description: "Add an extra tag named 'ExperimentId' to the results. The value for\n" +
+                         "this tag must be set by the 'Set Experiment ID' step at some point\n" +
+                         "before the end of the testplan run.")]
+        public bool SetExperimentId { get; set; }
+
         #endregion
+
+        [XmlIgnore]
+        public string ExperimentId { get; set; }
 
         public InfluxDbResultListener()
         {
@@ -72,18 +83,21 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
             User =  Facility = HostIP = string.Empty;
             Password = new SecureString();
             LogLevels = LogLevel.Info | LogLevel.Warning | LogLevel.Error;
+            SetExperimentId = false;
         }
 
         public override void Open()
         {
             base.Open();
             this.client = new LineProtocolClient(new Uri($"http://{Address}:{Port}"), Database, User, Password.GetString());
+            this.ExperimentId = string.Empty;
         }
 
         public override void Close()
         {
             base.Close();
             this.client = null;
+            this.ExperimentId = string.Empty;
         }
 
         public override void OnTestPlanRunStart(TestPlanRun planRun)
@@ -97,10 +111,18 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                 { "host", HostIP },
                 { "hostname", EngineSettings.Current.StationName }
             };
+
+            experimentIdWarning = false;
         }
 
         public override void OnResultPublished(Guid stepRun, ResultTable result)
         {
+            if (SetExperimentId && !experimentIdWarning && string.IsNullOrEmpty(ExperimentId))
+            {
+                Log.Warning($"{Name}: Results published before setting Experiment Id");
+                experimentIdWarning = true;
+            }
+
             LineProtocolPayload payload = new LineProtocolPayload();
             int ignored = 0, count = 0;
 
@@ -114,7 +136,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                     {
                         fields[item.Key] = item.Value;
                     }
-                    payload.Add(new LineProtocolPoint(result.Name, fields, this.baseTags, maybeDatetime.Value));
+                    payload.Add(new LineProtocolPoint(result.Name, fields, this.getTags(), maybeDatetime.Value));
                     count++;
                 }
                 else { ignored++; }
@@ -191,9 +213,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                         new Dictionary<string, object> { // fields
                             { "message", message.Text }
                         },
-                        new Dictionary<string, string>(this.baseTags) { // tags
-                            { "severity", message.SeverityCode }
-                        },
+                        this.getTags("severity", message.SeverityCode),
                         startTime + message.Time)
                     );
                     count++;
@@ -213,6 +233,26 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
             catch (Exception e)
             {
                 Log.Error($"Error while sending payload: {e.Message}{(e.InnerException != null ? $" - {e.InnerException.Message}" : "")}");
+            }
+        }
+
+        private Dictionary<string, string> getTags(params string[] extra)
+        {
+            if (extra.Length % 2 != 0) { throw new ArgumentException("Odd number of tokens."); }
+
+            if (extra.Length == 0 && !SetExperimentId) { return this.baseTags; }
+            else
+            {
+                Dictionary<string, string> res = new Dictionary<string, string>(this.baseTags);
+                for (int i = 0; i < extra.Length; i += 2)
+                {
+                    res.Add(extra[i], extra[i + 1]);
+                }
+                if (SetExperimentId && !string.IsNullOrEmpty(ExperimentId))
+                {
+                    res.Add("ExperimentId", ExperimentId);
+                }
+                return res;
             }
         }
     }
