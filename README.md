@@ -25,9 +25,15 @@ All new files to package must be included in the `package.xml` file of the *Main
 Provides a new result listener that is able to send all generated TAP results to an InfluxDB instance. 
 All columns from the original results are sent as `fields`, while some information about the host machine and TAP instance are sent as `tags`.
 The result listener is also able to send the generated TAP logs to InfluxDB, with a format compatible with [Chronograf](https://www.influxdata.com/time-series-platform/chronograf/)'s log viewer.  
-> Important: The result listener expects to find a column named `Timestamp` (case ignored) in order to know the timestamp that corresponds to each row.
->
-> The format of this column can be the number of seconds since the Epoch as a floating point value, or the number of milliseconds as an integer.
+
+##### Timestamp format
+The result listener expects to find a column named `Timestamp` (case ignored) in order to know the timestamp that corresponds to each row.
+
+The format of this column can be the number of seconds since the Epoch as a floating point value, or the number of milliseconds as an integer.
+
+If necessary, it's possible to define custom timestamp parsers for selected results by filling the `Datetime overrides` table (in the result listener settings). 
+The result listener will then look for matching column names in the results and parse them using the defined format strings.
+> Important: In this case the result listener assumes that the time is written in the local timezone instead of UTC.
 
 ### Tap.Plugins.5Genesis.Monroe
 
