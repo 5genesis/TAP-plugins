@@ -6,6 +6,11 @@ The *Main* plugin should not contain any code: Define other pugins to provide ne
 
 The packaged plugins can only depend on the standard TAP plugins, or on other 5Genesis TAP plugins.
 
+## Requirements
+
+ - [Keysight TAP 2018](https://www.keysight.com/en/pc-2873415/test-automation-platform-tap) (Tested on TAP 8.4)
+ - [Visual Studio 2015 or 2017](https://visualstudio.microsoft.com/)
+ 
 ## Packaging a new TAP Plugin
 
 In order to create a new TAP plugin and package it under the *Main* plugin:
@@ -35,18 +40,30 @@ If necessary, it's possible to define custom timestamp parsers for selected resu
 The result listener will then look for matching column names in the results and parse them using the defined format strings.
 > Important: In this case the result listener assumes that the time is written in the local timezone instead of UTC.
 
+##### Requirements
+
+ - [InfluxDb](https://www.influxdata.com/) (Tested on version 1.7.6)
+
 ### Tap.Plugins.5Genesis.Monroe
 
 Provides instruments and steps for handling a MONROE instance. Includes steps for deploying (and starting), stopping and retrieving results from experiments. Results will be published as TAP results.
 > The current result parser is only prepared for working with `monroe/ping` experiments. 
 
+##### Requirements
+
+ - [MONROE-experiment-core](https://github.com/MONROE-PROJECT/monroe-experiment-core)
+
 ### Tap.Plugins.5Genesis.Prometheus
 
 Provides an instrument and a step for retrieving results from a Prometheus instance. The step can be configured for performing any query using PromQL, and time range can be specified either as an absolute start/end or relative to the current time.
 
+##### Requirements
+
+ - [Prometheus](https://prometheus.io/)
+
 ### Tap.Plugins.5Genesis.SshInstrument
 
-Provides functionality for sending commands through SSH and transfering files/folders from the remote machine using SCP. Usage samples can be found at `(TAPPath)/5Genesis/Samples/SSH_Sample.TapPlan`.
+Provides functionality for sending commands through SSH and transferring files/folders from the remote machine using SCP. Usage samples can be found at `(TAPPath)/5Genesis/Samples/SSH_Sample.TapPlan`.
 
 ## Authors
 
