@@ -22,6 +22,8 @@ $(GitBranchVersion) - Gets the version number in the recommended format Major.Mi
     <File Path="5Genesis\Tap.Plugins.5Genesis.Prometheus.dll" Obfuscate="false" SetAssemblyInfo="Version"></File>
     <!-- InfluxDB Plugin-->
     <File Path="5Genesis\Tap.Plugins.5Genesis.InfluxDB.dll" Obfuscate="false" SetAssemblyInfo="Version"></File>
+    <!-- iPerf Agent Plugin-->
+    <File Path="5Genesis\Tap.Plugins.5Genesis.iPerfAgent.dll" Obfuscate="false" SetAssemblyInfo="Version"></File>
     <!-- Miscellaneous Plugin-->
     <File Path="5Genesis\Tap.Plugins.5Genesis.Misc.dll" Obfuscate="false" SetAssemblyInfo="Version"></File>
   </Files>
