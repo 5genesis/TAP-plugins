@@ -44,6 +44,14 @@ The result listener will then look for matching column names in the results and 
 
  - [InfluxDb](https://www.influxdata.com/) (Tested on version 1.7.6)
 
+### Tap.Plugins.5Genesis.iPerfAgent
+
+Provides an instrument an step for controlling an iPerf Agent installed on a remote machine.
+
+##### Requirements
+
+ - [iPerfAgent](https://gitlab.fokus.fraunhofer.de/5genesis/malaga-platform) version 1.0.2
+
 ### Tap.Plugins.5Genesis.Monroe
 
 Provides instruments and steps for handling a MONROE instance. Includes steps for deploying (and starting), stopping and retrieving results from experiments. Results will be published as TAP results.

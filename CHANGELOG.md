@@ -1,3 +1,7 @@
+**27/06/2019** [Version 190627]
+
+ - Implementation of the iPerfAgent plugin (code for the agent can be found in the [malaga-platform](https://gitlab.fokus.fraunhofer.de/5genesis/malaga-platform) repository).
+
 **30/05/2019**
 
  - Support for using selected column names and formats for the generation of the result's timestamps (InfluxDb result listener).
@@ -10,7 +14,7 @@
 
 **16/05/2019**
 
- - Implementation of the InflusDb result listener. It's able to send TAP logs and results to an InfluxDB instance.
+ - Implementation of the InfluxDb result listener. It's able to send TAP logs and results to an InfluxDB instance.
  - MONROE and Prometheus results are saved in their correct types if possible, instead of always string.
  - Prometheus results can be retrieved using relative times.
 
