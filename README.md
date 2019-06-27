@@ -9,7 +9,7 @@ The packaged plugins can only depend on the standard TAP plugins, or on other 5G
 ## Requirements
 
  - [Keysight TAP 2018](https://www.keysight.com/en/pc-2873415/test-automation-platform-tap) (Tested on TAP 8.4)
- - [Visual Studio 2015 or 2017](https://visualstudio.microsoft.com/)
+ - [Visual Studio 2015 or 2017](https://visualstudio.microsoft.com/) (For development)
  
 ## Packaging a new TAP Plugin
 
@@ -43,6 +43,14 @@ The result listener will then look for matching column names in the results and 
 ##### Requirements
 
  - [InfluxDb](https://www.influxdata.com/) (Tested on version 1.7.6)
+
+### Tap.Plugins.5Genesis.iPerfAgent
+
+Provides an instrument an step for controlling an iPerf Agent installed on a remote machine.
+
+##### Requirements
+
+ - [iPerfAgent](https://gitlab.fokus.fraunhofer.de/5genesis/malaga-platform) version 1.0.2
 
 ### Tap.Plugins.5Genesis.Monroe
 
