@@ -91,13 +91,13 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
         public bool Start(Dictionary<string, string> parameters)
         {
             AgentReply reply = SendRequest("Iperf", Method.POST, parameters);
-            return checkErrors(reply);
+            return !checkErrors(reply);
         }
 
         public bool Stop()
         {
             AgentReply reply = SendRequest("Close", Method.GET);
-            return checkErrors(reply);
+            return !checkErrors(reply);
         }
 
         public bool? IsRunning()
@@ -108,25 +108,34 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
             return reply.Message.Contains("True");
         }
 
-        public List<iPerfResult> GetResults()
+        public Tuple<ResultTable, bool> GetResults()
         {
             AgentReply reply = SendRequest("LastJsonResult", Method.GET);
+            
+            bool errors = checkErrors(reply);
 
-            checkErrors(reply);
+            return new Tuple<ResultTable, bool>(reply.ResultTable, !errors);
+        }
 
-            return reply.Result ?? new List<iPerfResult>();
+        public string GetError()
+        {
+            AgentReply reply = SendRequest("LastError", Method.GET);
+
+            bool errors = checkErrors(reply); // checkErrors will not look the 'Error' variable if 'Status' != 'Error'
+
+            return errors? reply.Error : null;
         }
 
         private bool checkErrors(AgentReply reply)
         {
             if (!reply.Success)
             {
-                Log.Error($"HTTP Error while retrieving results: {reply.HttpStatusDescription} ({reply.HttpStatus})");
+                Log.Error($"HTTP Error: {reply.HttpStatusDescription} ({reply.HttpStatus})");
                 return true;
             }
             else if (reply.Status == "Error")
             {
-                Log.Error($"Error while retrieving results: {reply.Error}");
+                Log.Error($"Error: {reply.Error}");
                 return true;
             }
             return false;

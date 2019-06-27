@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Compression;
 using Newtonsoft.Json.Linq;
+using Keysight.Tap;
 
 namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
 {
@@ -37,6 +38,37 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
         public bool Success
         {
             get { return ((int)HttpStatus >= 200) && ((int)HttpStatus <= 299); }
+        }
+
+        public ResultTable ResultTable
+        {
+            get
+            {
+                List<double> timestamps = new List<double>();
+                List<string> datetimes = new List<string>();
+                List<double> throughput = new List<double>();
+                List<double> packetloss = new List<double>();
+                List<double> jitter = new List<double>();
+
+                foreach (iPerfResult result in Result ?? new List<iPerfResult>())
+                {
+                    timestamps.Add(result.Timestamp);
+                    datetimes.Add(result.DateTime.ToString());
+                    throughput.Add(result.Throughput);
+                    packetloss.Add(result.PacketLoss);
+                    jitter.Add(result.Jitter);
+                }
+
+                ResultColumn[] columns = new ResultColumn[] {
+                    new ResultColumn("Timestamp", timestamps.ToArray()),
+                    new ResultColumn("DateTime", datetimes.ToArray()),
+                    new ResultColumn("Throughput", throughput.ToArray()),
+                    new ResultColumn("Packet Loss", packetloss.ToArray()),
+                    new ResultColumn("Jitter", jitter.ToArray()),
+                };
+
+                return new ResultTable("iPerf", columns);
+            }
         }
     }
 }
