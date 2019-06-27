@@ -58,6 +58,7 @@
     <Compile Include="Instruments\iPerfAgentInstrument.cs" />
     <Compile Include="Instruments\AgentReply.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Steps\iPerfAgentStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -68,8 +69,6 @@
       <Name>Tap.Plugins.5Genesis.Misc</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Steps\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
