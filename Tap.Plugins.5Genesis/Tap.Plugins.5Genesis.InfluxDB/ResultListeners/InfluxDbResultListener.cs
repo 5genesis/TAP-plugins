@@ -17,6 +17,7 @@ using Keysight.Tap;
 using InfluxDB.LineProtocol.Client;
 using InfluxDB.LineProtocol.Payload;
 using Tap.Plugins._5Genesis.Misc.Extensions;
+using Tap.Plugins._5Genesis.Misc.ResultListeners;
 using System.Security;
 using System.Xml.Serialization;
 using System.Globalization;
@@ -62,7 +63,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 
     [Display("InfluxDB", Group: "5Genesis", Description: "InfluxDB result listener")]
     [ShortName("INFLUX")]
-    public class InfluxDbResultListener : ResultListener
+    public class InfluxDbResultListener : ConfigurableResultListenerBase
     {
         private LineProtocolClient client = null;
         private DateTime startTime;
@@ -101,12 +102,6 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
         [Display("Host IP", Group: "Tags", Order: 2.1)]
         public string HostIP { get; set; }
 
-        [Display("Set Experiment ID", Group: "5Genesis", Order: 3.0,
-            Description: "Add an extra tag named 'ExperimentId' to the results. The value for\n" +
-                         "this tag must be set by the 'Set Experiment ID' step at some point\n" +
-                         "before the end of the testplan run.")]
-        public bool SetExperimentId { get; set; }
-
         [Display("DateTime overrides", Group: "Result Timestamps", Order: 4.0,
             Description: "Allows the use of certain result columns to be parsed for generating\n" +
                          "the row timestamp. Assumes that the result uses the Local timestamp\n" + 
@@ -115,8 +110,6 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 
         #endregion
 
-        [XmlIgnore]
-        public string ExperimentId { get; set; }
 
         public InfluxDbResultListener()
         {
@@ -136,6 +129,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
             base.Open();
             this.client = new LineProtocolClient(new Uri($"http://{Address}:{Port}"), Database, User, Password.GetString());
             this.ExperimentId = string.Empty;
+            this.Iteration = 0;
         }
 
         public override void Close()
@@ -143,6 +137,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
             base.Close();
             this.client = null;
             this.ExperimentId = string.Empty;
+            this.Iteration = 0;
         }
 
         public override void OnTestPlanRunStart(TestPlanRun planRun)
@@ -236,6 +231,9 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                     ResultColumn column = table.Columns.ElementAt(c);
                     res[column.Name] = (IConvertible)column.Data.GetValue(r);
                 }
+
+                if (AddIteration) { res["_iteration_"] = Iteration; }
+
                 yield return res;
             }
         }
