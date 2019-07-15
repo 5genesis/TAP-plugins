@@ -164,6 +164,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 
             LineProtocolPayload payload = new LineProtocolPayload();
             int ignored = 0, count = 0;
+            string sanitizedName = Sanitize(result.Name, "_");
 
             Override timestampParser = Overrides.Where((over) => (over.ResultName == result.Name)).FirstOrDefault();
             
@@ -177,14 +178,14 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                     {
                         fields[item.Key] = item.Value;
                     }
-                    payload.Add(new LineProtocolPoint(result.Name, fields, this.getTags(), maybeDatetime.Value));
+                    payload.Add(new LineProtocolPoint(sanitizedName, fields, this.getTags(), maybeDatetime.Value));
                     count++;
                 }
                 else { ignored++; }
             }
 
             if (ignored != 0) { Log.Warning($"Ignored {ignored}/{result.Rows} results from table {result.Name}: Could not parse Timestamp"); }
-            this.sendPayload(payload, count, $"results ({result.Name})");
+            this.sendPayload(payload, count, $"results ('{result.Name}'{(sanitizedName != result.Name ? $" as '{sanitizedName}'" : "")})");
 
             OnActivity();
         }

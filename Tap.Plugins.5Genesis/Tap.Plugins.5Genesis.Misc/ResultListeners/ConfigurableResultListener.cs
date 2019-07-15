@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using Keysight.Tap;
 
@@ -15,6 +16,8 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
 {
     public class ConfigurableResultListenerBase: ResultListener
     {
+        private static Regex VALID_CHARS = new Regex(@"[^A-Za-z0-9_-]", RegexOptions.Compiled);
+
         public const string ITERATION_COLUMN_NAME = "_iteration_";
 
         [Display("Set Experiment ID", Group: "Metadata", Order: 99.0,
@@ -93,6 +96,11 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
             List<T> list = new List<T>(columns);
             list.Insert(index, column);
             return list.ToArray();
+        }
+
+        public string Sanitize(string value, string replacement)
+        {
+            return VALID_CHARS.Replace(value, replacement);
         }
     }
 }

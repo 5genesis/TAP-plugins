@@ -28,8 +28,6 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
     [ShortName("MultiCSV")]
     public class MultipleCsvResultListener : ConfigurableResultListenerBase
     {
-        private static Regex VALID_CHARS = new Regex(@"[^A-Za-z0-9_-]", RegexOptions.Compiled);
-
         private const string RESULT_MACRO = "{ResultType}";
         private const string RESULTS_ID_MACRO = "{Identifier}";
         private const string VERDICT_MACRO = "{Verdict}";
@@ -160,7 +158,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
         {
             string path = FilePath;
 
-            path = path.Replace(RESULT_MACRO, VALID_CHARS.Replace(name, string.Empty));
+            path = path.Replace(RESULT_MACRO, Sanitize(name, "_"));
             path = path.Replace(VERDICT_MACRO, planRun.Verdict.ToString());
             path = path.Replace(DATE_MACRO, planRun.StartTime.ToString("yyyy-MM-dd HH-mm-ss"));
 
@@ -171,7 +169,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
                     ExperimentId = UNDEFINED;
                 }
 
-                string safeIdentifier = VALID_CHARS.Replace(ExperimentId, string.Empty);
+                string safeIdentifier = Sanitize(ExperimentId, "_");
                 Log.Info("Marking results with identifier: " + safeIdentifier);
                 path = path.Replace(RESULTS_ID_MACRO, safeIdentifier);
             }
