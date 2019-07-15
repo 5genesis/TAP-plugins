@@ -128,16 +128,12 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
         {
             base.Open();
             this.client = new LineProtocolClient(new Uri($"http://{Address}:{Port}"), Database, User, Password.GetString());
-            this.ExperimentId = string.Empty;
-            this.Iteration = 0;
         }
 
         public override void Close()
         {
             base.Close();
             this.client = null;
-            this.ExperimentId = string.Empty;
-            this.Iteration = 0;
         }
 
         public override void OnTestPlanRunStart(TestPlanRun planRun)
@@ -157,6 +153,9 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 
         public override void OnResultPublished(Guid stepRun, ResultTable result)
         {
+            result = ProcessResult(result);
+            if (result == null) { return; }
+
             if (SetExperimentId && !experimentIdWarning && string.IsNullOrEmpty(ExperimentId))
             {
                 Log.Warning($"{Name}: Results published before setting Experiment Id");
@@ -231,9 +230,6 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                     ResultColumn column = table.Columns.ElementAt(c);
                     res[column.Name] = (IConvertible)column.Data.GetValue(r);
                 }
-
-                if (AddIteration) { res["_iteration_"] = Iteration; }
-
                 yield return res;
             }
         }

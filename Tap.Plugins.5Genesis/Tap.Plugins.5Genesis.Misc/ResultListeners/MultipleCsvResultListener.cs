@@ -4,6 +4,9 @@
 // This file is part of the TRIANGLE project. The TRIANGLE project is funded by the European Union’s
 // Horizon 2020 research and innovation programme, grant agreement No 688712.
 //
+// This file is part of the 5GENESIS project. The 5GENESIS project is funded by the European Union’s
+// Horizon 2020 research and innovation programme, grant agreement No 815178.
+//
 // This file cannot be modified or redistributed. This header cannot be removed.
 
 using System;
@@ -96,25 +99,24 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
 
         public override void OnResultPublished(Guid stepRunId, ResultTable result)
         {
-            ResultTable processedResult = processResult(result);
-            if (processedResult == null)
-            {
-                return;
-            }
+            result = ProcessResult(result);
+            if (result == null) { return; }
 
-            string name = processedResult.Name;
+            if (this.SetExperimentId) { result = InjectColumn(result, "ExperimentId", ExperimentId); }
+
+            string name = result.Name;
             TestStepRun stepRun = getTestStepRun(stepRunId);
 
             if (!results.ContainsKey(name))
             {
-                results[name] = new PublishedResults(processedResult, this.planRun, stepRun);
+                results[name] = new PublishedResults(result, this.planRun, stepRun);
             }
             else
             {
-                results[name].AddResults(processedResult, stepRun);
+                results[name].AddResults(result, stepRun);
             }
 
-            base.OnResultPublished(stepRunId, processedResult);
+            base.OnResultPublished(stepRunId, result);
         }
 
         public override void OnTestPlanRunCompleted(TestPlanRun planRun, Stream logStream)
@@ -164,7 +166,10 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
 
             if (SetExperimentId)
             {
-                if (ExperimentId == UNDEFINED) { Log.Warning("Results identifier not set, will be " + UNDEFINED); }
+                if (string.IsNullOrWhiteSpace(ExperimentId)) {
+                    Log.Warning("Results identifier not set, will be " + UNDEFINED);
+                    ExperimentId = UNDEFINED;
+                }
 
                 string safeIdentifier = VALID_CHARS.Replace(ExperimentId, string.Empty);
                 Log.Info("Marking results with identifier: " + safeIdentifier);
@@ -185,30 +190,9 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
 
         private ResultTable processResult(ResultTable table)
         {
-            if (this.SetExperimentId) { table = injectColumn(table, "ExperimentId", ExperimentId); }
-            if (this.AddIteration) { table = injectColumn(table, "_iteration_", Iteration); }
+            if (this.SetExperimentId) { table = InjectColumn(table, "ExperimentId", ExperimentId); }
 
             return table;
-        }
-
-        private ResultTable injectColumn(ResultTable table, string name, IConvertible value)
-        {
-            int rows = table.Columns.Length > 0 ? table.Columns[0].Data.Length : 1;
-
-            IConvertible[] values = new IConvertible[rows];
-            for (int i = 0; i < rows; i++) { values[i] = value; }
-
-            ResultColumn column =  new ResultColumn(name, values);
-            ResultColumn[] columns = insert(table.Columns, 0, column);
-
-            return new ResultTable(table.Name, columns);
-        }
-
-        private T[] insert<T>(T[] columns, int index, T column)
-        {
-            List<T> list = new List<T>(columns);
-            list.Insert(index, column);
-            return list.ToArray();
         }
     }
 }

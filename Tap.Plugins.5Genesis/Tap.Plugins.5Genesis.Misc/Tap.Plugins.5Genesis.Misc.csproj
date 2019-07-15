@@ -56,6 +56,7 @@
     <Compile Include="Extensions\SecureStringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResultListeners\ConfigurableResultListener.cs" />
+    <Compile Include="ResultListeners\IterationMarkResult.cs" />
     <Compile Include="ResultListeners\MultipleCsvResultListener.cs" />
     <Compile Include="ResultListeners\PublishedResults.cs" />
     <Compile Include="ResultListeners\RowData.cs" />

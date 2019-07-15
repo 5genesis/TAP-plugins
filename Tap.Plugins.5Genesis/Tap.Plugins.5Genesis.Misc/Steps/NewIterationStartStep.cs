@@ -21,9 +21,6 @@ namespace Tap.Plugins._5Genesis.Misc.Steps
     {
         private int iteration;
 
-        [Display("ResultListeners", Order: 1.0)]
-        public List<ConfigurableResultListenerBase> ResultListeners { get; set; }
-
         [Display("Current iteration",
             Group: "Iteration",
             Description: "Read-only indicator of current iteration number.", Order: 2.0)]
@@ -42,10 +39,7 @@ namespace Tap.Plugins._5Genesis.Misc.Steps
 
         public override void Run()
         {
-            foreach (ConfigurableResultListenerBase resultListener in ResultListeners)
-            {
-                resultListener.Iteration = iteration;
-            }
+            Results.Publish(IterationMarkResult.NAME, new IterationMarkResult(iteration));
             iteration++;
         }
 
