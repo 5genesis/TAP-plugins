@@ -187,12 +187,5 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
 
             return stepRun.ElementAt(0);
         }
-
-        private ResultTable processResult(ResultTable table)
-        {
-            if (this.SetExperimentId) { table = InjectColumn(table, "ExperimentId", ExperimentId); }
-
-            return table;
-        }
     }
 }
