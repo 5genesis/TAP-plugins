@@ -30,6 +30,7 @@ All new files to package must be included in the `package.xml` file of the *Main
 Provides a new result listener that is able to send all generated TAP results to an InfluxDB instance. 
 All columns from the original results are sent as `fields`, while some information about the host machine and TAP instance are sent as `tags`.
 The result listener is also able to send the generated TAP logs to InfluxDB, with a format compatible with [Chronograf](https://www.influxdata.com/time-series-platform/chronograf/)'s log viewer.  
+It's also compatible with extra metadata (`ExperimentId` and `_iteration_`).
 
 ##### Timestamp format
 The result listener expects to find a column named `Timestamp` (case ignored) in order to know the timestamp that corresponds to each row.
@@ -51,6 +52,12 @@ Provides an instrument an step for controlling an iPerf Agent installed on a rem
 ##### Requirements
 
  - [iPerfAgent](https://gitlab.fokus.fraunhofer.de/5genesis/malaga-platform) version 1.0.2
+
+### Tap.Plugins.5Genesis.Misc
+
+ - Provides helper functionality for other plugins.
+ - Multi-CSV result listener: This result-listener will create a separate CSV file for each of the generated result kinds, instead of a single, monolithic file as on the original TAP CSV result listener.
+ It's also compatible with extra metadata (`ExperimentId` and `_iteration_`).
 
 ### Tap.Plugins.5Genesis.Monroe
 
