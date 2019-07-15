@@ -47,12 +47,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\CsvSeparator.cs" />
+    <Compile Include="Enums\CsvSeparatorExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\DoubleExtensions.cs" />
     <Compile Include="Extensions\ResultTableExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\SecureStringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ResultListeners\ConfigurableResultListener.cs" />
+    <Compile Include="ResultListeners\IterationMarkResult.cs" />
+    <Compile Include="ResultListeners\MultipleCsvResultListener.cs" />
+    <Compile Include="ResultListeners\PublishedResults.cs" />
+    <Compile Include="ResultListeners\RowData.cs" />
+    <Compile Include="Steps\NewIterationStartStep.cs" />
+    <Compile Include="Steps\SetExperimentIdStep.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

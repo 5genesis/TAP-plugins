@@ -6,16 +6,18 @@
 //
 // This file cannot be modified or redistributed. This header cannot be removed.
 
-using System;
-
-namespace Tap.Plugins._5Genesis.Misc.Extensions
+namespace Tap.Plugins._5Genesis.Misc.Enums
 {
-    public static class DoubleExtensions
+    public static class CsvSeparatorExtensions
     {
-        public static DateTime ToDateTime(this double timestamp)
+        public static string AsString(this CsvSeparator separator)
         {
-            DateTimeOffset offset = DateTimeOffset.FromUnixTimeMilliseconds((long)(timestamp * 1000));
-            return offset.UtcDateTime;
+            switch (separator)
+            {
+                case CsvSeparator.Comma: return ",";
+                case CsvSeparator.SemiColon: return ";";
+                default: return "\t";
+            }
         }
     }
 }

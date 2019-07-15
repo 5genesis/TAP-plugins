@@ -1,3 +1,8 @@
+**15/07/2019** [Version 190715]
+
+ - Added Multi-CSV result listener.
+ - Avoid sending measurement names with spaces (or symbols) to InfluxDb, added iteration metadata.
+
 **27/06/2019** [Version 190627]
 
  - Implementation of the iPerfAgent plugin (code for the agent can be found in the [malaga-platform](https://gitlab.fokus.fraunhofer.de/5genesis/malaga-platform) repository).

@@ -6,24 +6,20 @@
 //
 // This file cannot be modified or redistributed. This header cannot be removed.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.ComponentModel;
 using Keysight.Tap;
 
-using Tap.Plugins._5Genesis.InfluxDB.ResultListeners;
+using Tap.Plugins._5Genesis.Misc.ResultListeners;
 
-namespace Tap.Plugins._5Genesis.InfluxDB.Steps
+namespace Tap.Plugins._5Genesis.Misc.Steps
 {
-    [Display("Set Experiment ID", Groups: new string[] { "5Genesis", "InfluxDB" })]
+    [Display("Set Experiment ID", Groups: new string[] { "5Genesis", "Misc" })]
     public class SetExperimentIdStep : TestStep
     {
         #region Settings
         
-        [Display("InfluxDB", Order: 1.0)]
-        public InfluxDbResultListener ResultListener { get; set; }
+        [Display("ResultListeners", Order: 1.0)]
+        public List<ConfigurableResultListenerBase> ResultListeners { get; set; }
 
         [Display("Experiment ID", Order: 1.1)]
         public string ExperimentId { get; set; }
@@ -40,8 +36,11 @@ namespace Tap.Plugins._5Genesis.InfluxDB.Steps
             }
             else
             {
-                Log.Info($"Setting ExperimentId to {ExperimentId} ({ResultListener.Name})");
-                ResultListener.ExperimentId = this.ExperimentId;
+                foreach (ConfigurableResultListenerBase resultListener in ResultListeners)
+                {
+                    Log.Info($"Setting ExperimentId to {ExperimentId} ({resultListener.Name})");
+                    resultListener.ExperimentId = this.ExperimentId;
+                }
             }
         }
     }

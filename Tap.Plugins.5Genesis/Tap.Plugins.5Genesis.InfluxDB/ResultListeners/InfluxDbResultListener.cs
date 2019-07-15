@@ -17,6 +17,7 @@ using Keysight.Tap;
 using InfluxDB.LineProtocol.Client;
 using InfluxDB.LineProtocol.Payload;
 using Tap.Plugins._5Genesis.Misc.Extensions;
+using Tap.Plugins._5Genesis.Misc.ResultListeners;
 using System.Security;
 using System.Xml.Serialization;
 using System.Globalization;
@@ -62,7 +63,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 
     [Display("InfluxDB", Group: "5Genesis", Description: "InfluxDB result listener")]
     [ShortName("INFLUX")]
-    public class InfluxDbResultListener : ResultListener
+    public class InfluxDbResultListener : ConfigurableResultListenerBase
     {
         private LineProtocolClient client = null;
         private DateTime startTime;
@@ -101,12 +102,6 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
         [Display("Host IP", Group: "Tags", Order: 2.1)]
         public string HostIP { get; set; }
 
-        [Display("Set Experiment ID", Group: "5Genesis", Order: 3.0,
-            Description: "Add an extra tag named 'ExperimentId' to the results. The value for\n" +
-                         "this tag must be set by the 'Set Experiment ID' step at some point\n" +
-                         "before the end of the testplan run.")]
-        public bool SetExperimentId { get; set; }
-
         [Display("DateTime overrides", Group: "Result Timestamps", Order: 4.0,
             Description: "Allows the use of certain result columns to be parsed for generating\n" +
                          "the row timestamp. Assumes that the result uses the Local timestamp\n" + 
@@ -115,8 +110,6 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 
         #endregion
 
-        [XmlIgnore]
-        public string ExperimentId { get; set; }
 
         public InfluxDbResultListener()
         {
@@ -135,14 +128,12 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
         {
             base.Open();
             this.client = new LineProtocolClient(new Uri($"http://{Address}:{Port}"), Database, User, Password.GetString());
-            this.ExperimentId = string.Empty;
         }
 
         public override void Close()
         {
             base.Close();
             this.client = null;
-            this.ExperimentId = string.Empty;
         }
 
         public override void OnTestPlanRunStart(TestPlanRun planRun)
@@ -162,6 +153,9 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 
         public override void OnResultPublished(Guid stepRun, ResultTable result)
         {
+            result = ProcessResult(result);
+            if (result == null) { return; }
+
             if (SetExperimentId && !experimentIdWarning && string.IsNullOrEmpty(ExperimentId))
             {
                 Log.Warning($"{Name}: Results published before setting Experiment Id");
@@ -170,6 +164,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 
             LineProtocolPayload payload = new LineProtocolPayload();
             int ignored = 0, count = 0;
+            string sanitizedName = Sanitize(result.Name, "_");
 
             Override timestampParser = Overrides.Where((over) => (over.ResultName == result.Name)).FirstOrDefault();
             
@@ -183,14 +178,14 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                     {
                         fields[item.Key] = item.Value;
                     }
-                    payload.Add(new LineProtocolPoint(result.Name, fields, this.getTags(), maybeDatetime.Value));
+                    payload.Add(new LineProtocolPoint(sanitizedName, fields, this.getTags(), maybeDatetime.Value));
                     count++;
                 }
                 else { ignored++; }
             }
 
             if (ignored != 0) { Log.Warning($"Ignored {ignored}/{result.Rows} results from table {result.Name}: Could not parse Timestamp"); }
-            this.sendPayload(payload, count, $"results ({result.Name})");
+            this.sendPayload(payload, count, $"results ('{result.Name}'{(sanitizedName != result.Name ? $" as '{sanitizedName}'" : "")})");
 
             OnActivity();
         }
