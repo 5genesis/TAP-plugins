@@ -176,7 +176,10 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                     Dictionary<string, object> fields = new Dictionary<string, object>();
                     foreach (KeyValuePair<string, IConvertible> item in row)
                     {
-                        fields[item.Key] = item.Value;
+                        if (item.Value != null) // Null (unsent) values will appear as empty columns
+                        {
+                            fields[item.Key] = item.Value;
+                        }
                     }
                     payload.Add(new LineProtocolPoint(sanitizedName, fields, this.getTags(), maybeDatetime.Value));
                     count++;
