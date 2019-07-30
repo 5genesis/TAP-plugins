@@ -1,3 +1,7 @@
+**30/07/2019** [Version 300715]
+
+ - Do not send null values to InfluxDb
+
 **15/07/2019** [Version 190715]
 
  - Added Multi-CSV result listener.

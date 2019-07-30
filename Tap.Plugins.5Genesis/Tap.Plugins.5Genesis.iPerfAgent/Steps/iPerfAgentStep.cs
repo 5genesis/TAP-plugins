@@ -15,12 +15,13 @@ using Keysight.Tap;
 
 using Tap.Plugins._5Genesis.iPerfAgent.Instruments;
 using Tap.Plugins._5Genesis.Misc.Extensions;
+using Tap.Plugins._5Genesis.Misc.Steps;
 using System.Xml.Serialization;
 
 namespace Tap.Plugins._5Genesis.iPerfAgent.Steps
 {
     [Display("iPerf Agent", Groups: new string[] { "5Genesis", "Agents" }, Description: "Step for controlling a iPerf agent installed on a remote machine.")]
-    public class iPerfAgentStep : TestStep
+    public class iPerfAgentStep : MeasurementStepBase
     {
         public enum ActionEnum {
             Start,
@@ -32,11 +33,6 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Steps
             RetrieveResults,
             [Display("Retrieve Error")]
             RetrieveErrors
-        }
-
-        public enum WaitMode {
-            Time,
-            Children
         }
 
         public enum RoleEnum {
@@ -87,31 +83,25 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Steps
 
         #region Measurement
 
-        [EnabledIf("Action", ActionEnum.Measure, HideIfDisabled = true)]
-        [Display("Wait Mode", Group: "Measurement", Order: 3.0)]
-        public WaitMode Mode { get; set; }
+        public override bool HideMeasurement { get { return Action != ActionEnum.Measure; } }
 
-        [EnabledIf("Action", ActionEnum.Measure, HideIfDisabled = true)]
-        [EnabledIf("Mode", WaitMode.Time, HideIfDisabled = true)]
-        [Display("Time", Group: "Measurement", Order: 3.1)]
-        [Unit("s")]
-        public double Time { get; set; }
+        // Measurement properties have order 50.0 and 50.1
 
         #endregion
 
         #region CheckRunning
 
-        [Display("Verdict when running", Group: "Check if Running", Order: 4.0)]
+        [Display("Verdict when running", Group: "Check if Running", Order: 60.0)]
         [EnabledIf("Action", ActionEnum.CheckRunning, HideIfDisabled = true)]
         public Verdict VerdictOnRunning { get; set; }
 
-        [Display("Verdict when idle", Group: "Check if Running", Order: 4.1)]
+        [Display("Verdict when idle", Group: "Check if Running", Order: 60.1)]
         [EnabledIf("Action", ActionEnum.CheckRunning, HideIfDisabled = true)]
         public Verdict VerdictOnIdle { get; set; }
 
         #endregion
 
-        [Display("Verdict on error", Group: "Errors", Order: 5.0)]
+        [Display("Verdict on error", Group: "Errors", Order: 70.0)]
         public Verdict VerdictOnError { get; set; }
 
         #endregion
@@ -120,8 +110,8 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Steps
         public iPerfAgentStep()
         {
             Action = ActionEnum.Measure;
-            Mode = WaitMode.Time;
-            Time = 4.0;
+            MeasurementMode = WaitMode.Time;
+            MeasurementTime = 4.0;
 
             VerdictOnError = Verdict.NotSet;
             VerdictOnRunning = Verdict.Pass;
@@ -201,15 +191,7 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Steps
         {
             start();
 
-            switch (Mode)
-            {
-                case WaitMode.Time:
-                    TestPlan.Sleep((int)(Time * 1000));
-                    break;
-                default:
-                    RunChildSteps();
-                    break;
-            }
+            MeasurementWait();
 
             stop();
             retrieveResults();
