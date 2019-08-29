@@ -178,7 +178,11 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                     {
                         if (item.Value != null) // Null (unsent) values will appear as empty columns
                         {
-                            fields[item.Key] = item.Value;
+                            // Avoid sending invalid values to the database
+                            if (!(item.Value.ToString() == "9.91E+37" || item.Value.ToString() == "Infinity")) 
+                            {
+                                fields[item.Key] = item.Value;
+                            }
                         }
                     }
                     payload.Add(new LineProtocolPoint(sanitizedName, fields, this.getTags(), maybeDatetime.Value));

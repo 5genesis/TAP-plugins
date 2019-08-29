@@ -1,3 +1,7 @@
+**29/08/2019** [Version 1.0.0]
+
+ - Bugfix, changed version nomenclature
+
 **30/07/2019** [Version 300715]
 
  - Do not send null values to InfluxDb

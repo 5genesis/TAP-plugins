@@ -26,7 +26,7 @@ using Newtonsoft.Json;
 
 namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
 {
-    [Display("iPerf Agent", Group: "5Genesis", Description: "MONROE Instrument")]
+    [Display("iPerf Agent", Group: "5Genesis", Description: "Remote iPerf Agent")]
     [ShortName("iPerfA")]
     public class IPerfAgentInstrument : Instrument
     {
@@ -34,18 +34,12 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
 
         #region Settings
 
-        [Display("IP", Group: "Monroe", Order: 2.1, Description: "MONROE VM IP Address")]
+        [Display("IP", Group: "Agent", Order: 2.1, Description: "Agent IP address")]
         public string Host { get; set; }
 
-        [Display("Agent Port", Group: "Monroe", Order: 2.2, Description: "TAP Agent Port")]
+        [Display("Agent Port", Group: "Agent", Order: 2.2, Description: "Agent Port")]
         public int Port { get; set; }
-
-        [Display("API Key", Group: "Monroe", Order: 2.3, Description: "TAP Agent API Key")]
-        public SecureString ApiKey { get; set; }
-
-        [Display("Allow insecure connections", Group: "Monroe", Order: 2.4, Description: "Ignore SSL errors")]
-        public bool Insecure { get; set; }
-        
+       
         #endregion
 
         public IPerfAgentInstrument()
