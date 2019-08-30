@@ -78,6 +78,10 @@
       <Project>{5d5f9833-544c-4874-a02d-5ca7a466af37}</Project>
       <Name>Tap.Plugins.5Genesis.SshInstrument</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Tap.Plugins.5Genesis.Y1Demo\Tap.Plugins.5Genesis.Y1Demo.csproj">
+      <Project>{c38fb927-8bcf-4ea9-8770-745cf62ec3fc}</Project>
+      <Name>Tap.Plugins.5Genesis.Y1Demo</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <UsingTask TaskName="Keysight.Tap.Sdk.MSBuild.PackageTask" AssemblyFile="$(TAP_PATH)\Keysight.Tap.Sdk.MSBuild.dll" />
