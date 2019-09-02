@@ -20,9 +20,9 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
 
         public const string ITERATION_COLUMN_NAME = "_iteration_";
 
-        [Display("Set Experiment ID", Group: "Metadata", Order: 99.0,
+        [Display("Set Execution ID", Group: "Metadata", Order: 99.0,
             Description: "Add an extra 'ExperimentId' identifier to the results. The value for\n" +
-                         "this identifier must be set by the 'Set Experiment ID' step at some point\n" +
+                         "this identifier must be set by the 'Set Execution ID' step at some point\n" +
                          "before the end of the testplan run.")]
         public bool SetExperimentId { get; set; }
 
