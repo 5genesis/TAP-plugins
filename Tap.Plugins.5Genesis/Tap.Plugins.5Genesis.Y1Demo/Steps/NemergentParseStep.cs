@@ -102,8 +102,8 @@ namespace Tap.Plugins._5Genesis.Y1Demo.Steps
 
         public NemergentParseStep()
         {
-            Kpi1File = @"..\..\..\Users\Bruno\Desktop\DEMOReview\MCS_NEM_KPI1_results.txt";
-            Kpi2File = @"..\..\..\Users\Bruno\Desktop\DEMOReview\MCS_NEM_KPI2_results.txt";
+            Kpi1File = string.Empty;
+            Kpi2File = string.Empty;
         }
 
         public override void PrePlanRun()
@@ -118,7 +118,8 @@ namespace Tap.Plugins._5Genesis.Y1Demo.Steps
             getAccessTimes();
             
             getE2ETimes();
-            
+
+            publishResults();
         }
 
         public override void PostPlanRun()
@@ -191,6 +192,46 @@ namespace Tap.Plugins._5Genesis.Y1Demo.Steps
             {
                 E2ETime.FailedTimes.Add(new Point() { Timestamp = pair.Value });
             }
+        }
+
+        private void publishResults()
+        {
+            if (AccessTime.Total != 0)
+            {
+                publishOne(AccessTime, "NEM_Access_Time_Success", "NEM_Access_Time_Failed", "NEM_Access_Time_Aggregated");
+            }
+            if (E2ETime.Total != 0)
+            {
+                publishOne(E2ETime, "NEM_E2E_Access_Success", "NEM_Access_Time_Failed", "NEM_E2E_Access_Aggregated");
+            }
+        }
+
+        private void publishOne(KpiData kpi, string successName, string failedName, string aggregatedName)
+        {
+            List<long> successTimestamps = new List<long>();
+            List<long> delays = new List<long>();
+            List<long> failedTimestamps = new List<long>();
+
+            foreach (Point point in AccessTime.AccessTimes)
+            {
+                successTimestamps.Add(point.Timestamp);
+                delays.Add(point.Delay);
+            }
+
+            foreach (Point point in AccessTime.FailedTimes)
+            {
+                failedTimestamps.Add(point.Timestamp);
+            }
+
+            // Aggregated values must be created near the rest of the results
+            long aggregatedTimestamp = successTimestamps.Count != 0 ? successTimestamps[0] : failedTimestamps[0];
+
+            Results.PublishTable(successName, new List<string>() { "Timestamp", "Delay" },
+                successTimestamps.ToArray(), delays.ToArray());
+            Results.PublishTable(failedName, new List<string>() { "Timestamp", "Zero" },
+                failedTimestamps.ToArray(), new int[failedTimestamps.Count]);
+            Results.Publish(aggregatedName, new List<string>() { "Timestamp", "Total", "Success", "Failed" },
+                aggregatedTimestamp, AccessTime.Total, AccessTime.AccessTimes.Count, AccessTime.FailedTimes.Count);
         }
 
         private IEnumerable<MeasurementPoint> getMeasurementPoints(string file)
