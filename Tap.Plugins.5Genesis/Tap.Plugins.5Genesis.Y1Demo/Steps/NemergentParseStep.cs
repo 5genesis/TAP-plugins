@@ -65,8 +65,18 @@ namespace Tap.Plugins._5Genesis.Y1Demo.Steps
 
     public class Point
     {
-        public long Timestamp { get; set; }
-        public long Delay { get; set; }
+        public long Timestamp { get; private set; }
+        public long Delay { get; private set; }
+        public long UtcTimestamp { get; private set; }
+
+        public Point(long timestamp, long delay)
+        {
+            Timestamp = timestamp;
+            Delay = delay;
+            DateTimeOffset local = DateTimeOffset.FromUnixTimeMilliseconds(Timestamp);
+            DateTimeOffset utc = TimeZoneInfo.ConvertTime(local, TimeZoneInfo.Local);
+            UtcTimestamp = local.Subtract(utc.Offset).ToUnixTimeMilliseconds();
+        }
     }
 
     public class KpiData
@@ -143,7 +153,7 @@ namespace Tap.Plugins._5Genesis.Y1Demo.Steps
                         case MeasurementPoint.EMessage.TokenRequest:
                             if (requested) // There was a request without acknowledgement
                             {
-                                AccessTime.FailedTimes.Add(new Point() { Timestamp=requestTime });
+                                AccessTime.FailedTimes.Add(new Point(requestTime, 0));
                             }
                             AccessTime.Total += 1;
                             requested = true;
@@ -152,7 +162,7 @@ namespace Tap.Plugins._5Genesis.Y1Demo.Steps
                         case MeasurementPoint.EMessage.TokenGranted:
                             if (requested)
                             {
-                                AccessTime.AccessTimes.Add(new Point() { Timestamp = requestTime, Delay = point.Timestamp - requestTime });
+                                AccessTime.AccessTimes.Add(new Point(requestTime, point.Timestamp - requestTime));
                             }
                             requested = false;
                             break;
@@ -179,7 +189,7 @@ namespace Tap.Plugins._5Genesis.Y1Demo.Steps
                             if (requests.ContainsKey(point.Sequence))
                             {
                                 long startTime = requests[point.Sequence];
-                                E2ETime.AccessTimes.Add(new Point() { Timestamp = startTime, Delay = point.Timestamp - startTime });
+                                E2ETime.AccessTimes.Add(new Point(startTime, point.Timestamp - startTime));
                                 requests.Remove(point.Sequence);
                             }
                             break;
@@ -190,7 +200,7 @@ namespace Tap.Plugins._5Genesis.Y1Demo.Steps
             // Requests that never got an OK
             foreach (var pair in requests)
             {
-                E2ETime.FailedTimes.Add(new Point() { Timestamp = pair.Value });
+                E2ETime.FailedTimes.Add(new Point(pair.Value, 0));
             }
         }
 
@@ -202,7 +212,7 @@ namespace Tap.Plugins._5Genesis.Y1Demo.Steps
             }
             if (E2ETime.Total != 0)
             {
-                publishOne(E2ETime, "NEM_E2E_Access_Success", "NEM_Access_Time_Failed", "NEM_E2E_Access_Aggregated");
+                publishOne(E2ETime, "NEM_E2E_Access_Success", "NEM_E2E_Access_Failed", "NEM_E2E_Access_Aggregated");
             }
         }
 
@@ -212,15 +222,15 @@ namespace Tap.Plugins._5Genesis.Y1Demo.Steps
             List<long> delays = new List<long>();
             List<long> failedTimestamps = new List<long>();
 
-            foreach (Point point in AccessTime.AccessTimes)
+            foreach (Point point in kpi.AccessTimes)
             {
-                successTimestamps.Add(point.Timestamp);
+                successTimestamps.Add(point.UtcTimestamp);
                 delays.Add(point.Delay);
             }
 
-            foreach (Point point in AccessTime.FailedTimes)
+            foreach (Point point in kpi.FailedTimes)
             {
-                failedTimestamps.Add(point.Timestamp);
+                failedTimestamps.Add(point.UtcTimestamp);
             }
 
             // Aggregated values must be created near the rest of the results
@@ -231,7 +241,7 @@ namespace Tap.Plugins._5Genesis.Y1Demo.Steps
             Results.PublishTable(failedName, new List<string>() { "Timestamp", "Zero" },
                 failedTimestamps.ToArray(), new int[failedTimestamps.Count]);
             Results.Publish(aggregatedName, new List<string>() { "Timestamp", "Total", "Success", "Failed" },
-                aggregatedTimestamp, AccessTime.Total, AccessTime.AccessTimes.Count, AccessTime.FailedTimes.Count);
+                aggregatedTimestamp, kpi.Total, kpi.AccessTimes.Count, kpi.FailedTimes.Count);
         }
 
         private IEnumerable<MeasurementPoint> getMeasurementPoints(string file)
