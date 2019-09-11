@@ -62,7 +62,8 @@
     <Compile Include="ResultListeners\RowData.cs" />
     <Compile Include="Steps\MeasurementStepBase.cs" />
     <Compile Include="Steps\NewIterationStartStep.cs" />
-    <Compile Include="Steps\SetExperimentIdStep.cs" />
+    <Compile Include="Steps\SetExecutionMetadata.cs" />
+    <Compile Include="Steps\SetExecutionId.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

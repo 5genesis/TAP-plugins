@@ -13,8 +13,10 @@ using Tap.Plugins._5Genesis.Misc.ResultListeners;
 
 namespace Tap.Plugins._5Genesis.Misc.Steps
 {
-    [Display("Set Execution ID", Groups: new string[] { "5Genesis", "Misc" })]
-    public class SetExperimentIdStep : TestStep
+    [Display("Set Execution ID", Groups: new string[] { "5Genesis", "Misc" }, 
+             Description: "Sets the Execution ID on compatible result listeners. For setting\n"+
+                          "additional metadata use the 'Set Experiment Metadata' step.")]
+    public class SetExecutionIdStep : TestStep
     {
         #region Settings
         
@@ -25,7 +27,7 @@ namespace Tap.Plugins._5Genesis.Misc.Steps
         public string ExecutionId { get; set; }
 
         #endregion
-        public SetExperimentIdStep() { }
+        public SetExecutionIdStep() { }
 
         public override void Run()
         {
@@ -38,7 +40,7 @@ namespace Tap.Plugins._5Genesis.Misc.Steps
                 foreach (ConfigurableResultListenerBase resultListener in ResultListeners)
                 {
                     Log.Info($"Setting ExecutiontId to {ExecutionId} ({resultListener.Name})");
-                    resultListener.ExperimentId = this.ExecutionId;
+                    resultListener.ExecutionId = this.ExecutionId;
                 }
             }
         }
