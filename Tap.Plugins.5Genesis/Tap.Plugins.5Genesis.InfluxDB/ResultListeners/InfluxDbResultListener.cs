@@ -68,7 +68,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
         private LineProtocolClient client = null;
         private DateTime startTime;
         private Dictionary<string, string> baseTags = null;
-        private bool experimentIdWarning = false;
+        private bool executionIdWarning = false;
 
         #region Settings
 
@@ -120,7 +120,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
             User =  Facility = HostIP = string.Empty;
             Password = new SecureString();
             LogLevels = LogLevel.Info | LogLevel.Warning | LogLevel.Error;
-            SetExperimentId = false;
+            SetExecutionId = false;
             Overrides = new List<Override>();
         }
 
@@ -148,7 +148,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                 { "hostname", EngineSettings.Current.StationName }
             };
 
-            experimentIdWarning = false;
+            executionIdWarning = false;
         }
 
         public override void OnResultPublished(Guid stepRun, ResultTable result)
@@ -156,10 +156,10 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
             result = ProcessResult(result);
             if (result == null) { return; }
 
-            if (SetExperimentId && !experimentIdWarning && string.IsNullOrEmpty(ExperimentId))
+            if (SetExecutionId && !executionIdWarning && string.IsNullOrEmpty(ExecutionId))
             {
-                Log.Warning($"{Name}: Results published before setting Experiment Id");
-                experimentIdWarning = true;
+                Log.Warning($"{Name}: Results published before setting Execution Id");
+                executionIdWarning = true;
             }
 
             LineProtocolPayload payload = new LineProtocolPayload();
@@ -289,7 +289,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
         {
             if (extra.Length % 2 != 0) { throw new ArgumentException("Odd number of tokens."); }
 
-            if (extra.Length == 0 && !SetExperimentId) { return this.baseTags; }
+            if (extra.Length == 0 && !SetExecutionId) { return this.baseTags; }
             else
             {
                 Dictionary<string, string> res = new Dictionary<string, string>(this.baseTags);
@@ -297,9 +297,9 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
                 {
                     res.Add(extra[i], extra[i + 1]);
                 }
-                if (SetExperimentId && !string.IsNullOrEmpty(ExperimentId))
+                if (SetExecutionId && !string.IsNullOrEmpty(ExecutionId))
                 {
-                    res.Add("ExperimentId", ExperimentId);
+                    res.Add("ExecutionId", ExecutionId);
                 }
                 return res;
             }

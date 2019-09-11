@@ -21,10 +21,10 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
         public const string ITERATION_COLUMN_NAME = "_iteration_";
 
         [Display("Set Execution ID", Group: "Metadata", Order: 99.0,
-            Description: "Add an extra 'ExperimentId' identifier to the results. The value for\n" +
+            Description: "Add an extra 'ExecutionId' identifier to the results. The value for\n" +
                          "this identifier must be set by the 'Set Execution ID' step at some point\n" +
                          "before the end of the testplan run.")]
-        public bool SetExperimentId { get; set; }
+        public bool SetExecutionId { get; set; }
 
         [Display("Add Iteration Number", Group: "Metadata", Order: 99.1,
             Description: "Add an '_iteration_' identifier to the results. The value for\n" +
@@ -34,7 +34,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
         public bool AddIteration { get; set; }
 
         [XmlIgnore]
-        public string ExperimentId { get; set; }
+        public string ExecutionId { get; set; }
 
         protected int iteration { get; set; }
 
@@ -43,7 +43,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
             base.Open();
 
             iteration = 0;
-            ExperimentId = string.Empty;
+            ExecutionId = string.Empty;
         }
 
         public override void Close()
@@ -51,7 +51,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
             base.Close();
 
             iteration = 0;
-            ExperimentId = string.Empty;
+            ExecutionId = string.Empty;
         }
 
         protected ResultTable ProcessResult(ResultTable results)

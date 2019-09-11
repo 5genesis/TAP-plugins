@@ -1,6 +1,8 @@
-**29/08/2019** [Version 1.1]
+**11/09/2019** [Version 1.1]
 
  - Add plugin, step for year 1 review MCS demo
+ - Add 'Set Execution Metadata' step
+ - Rename ExperimentId to ExecutionId
 
 **29/08/2019** [Version 1.0.0]
 

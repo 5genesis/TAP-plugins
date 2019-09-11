@@ -69,10 +69,10 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
         {
             Separator = CsvSeparator.Comma;
             FilePath = DEFAULT_FILE_PATH;
-            ExperimentId = UNDEFINED;
+            ExecutionId = UNDEFINED;
 
             this.Rules.Add(() => (FilePath.Contains(RESULT_MACRO)), RESULT_MACRO + " must be included on the file path", "FilePath");
-            this.Rules.Add(() => (!this.SetExperimentId || FilePath.Contains(RESULTS_ID_MACRO)),
+            this.Rules.Add(() => (!this.SetExecutionId || FilePath.Contains(RESULTS_ID_MACRO)),
                 RESULTS_ID_MACRO + " must be included on the file path", "FilePath");
         }
 
@@ -83,7 +83,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
             results = new Dictionary<string, PublishedResults>();
             stepRuns = new List<TestStepRun>();
             this.planRun = planRun;
-            ExperimentId = UNDEFINED;
+            ExecutionId = UNDEFINED;
 
             base.OnTestPlanRunStart(planRun);
         }
@@ -100,7 +100,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
             result = ProcessResult(result);
             if (result == null) { return; }
 
-            if (this.SetExperimentId) { result = InjectColumn(result, "ExperimentId", ExperimentId); }
+            if (this.SetExecutionId) { result = InjectColumn(result, "ExecutionId", ExecutionId); }
 
             string name = result.Name;
             TestStepRun stepRun = getTestStepRun(stepRunId);
@@ -162,14 +162,14 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
             path = path.Replace(VERDICT_MACRO, planRun.Verdict.ToString());
             path = path.Replace(DATE_MACRO, planRun.StartTime.ToString("yyyy-MM-dd HH-mm-ss"));
 
-            if (SetExperimentId)
+            if (SetExecutionId)
             {
-                if (string.IsNullOrWhiteSpace(ExperimentId)) {
+                if (string.IsNullOrWhiteSpace(ExecutionId)) {
                     Log.Warning("Results identifier not set, will be " + UNDEFINED);
-                    ExperimentId = UNDEFINED;
+                    ExecutionId = UNDEFINED;
                 }
 
-                string safeIdentifier = Sanitize(ExperimentId, "_");
+                string safeIdentifier = Sanitize(ExecutionId, "_");
                 Log.Info("Marking results with identifier: " + safeIdentifier);
                 path = path.Replace(RESULTS_ID_MACRO, safeIdentifier);
             }
