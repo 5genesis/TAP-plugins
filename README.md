@@ -80,6 +80,10 @@ Provides an instrument and a step for retrieving results from a Prometheus insta
 
 Provides functionality for sending commands through SSH and transferring files/folders from the remote machine using SCP. Usage samples can be found at `(TAPPath)/5Genesis/Samples/SSH_Sample.TapPlan`.
 
+### Tap.Plugins.5Genesis.Y1Demo
+
+Specific functionality for the year 1 review demo(s). Not expected to be used in general, logic included will probably be moved to other plugins and further refined in the future.
+
 ## Authors
 
 * **Bruno Garcia Garcia**
