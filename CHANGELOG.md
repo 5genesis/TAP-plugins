@@ -1,3 +1,7 @@
+**29/08/2019** [Version 1.1]
+
+ - Add plugin, step for year 1 review MCS demo
+
 **29/08/2019** [Version 1.0.0]
 
  - Bugfix, changed version nomenclature

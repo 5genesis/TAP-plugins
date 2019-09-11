@@ -13,7 +13,7 @@ using Tap.Plugins._5Genesis.Misc.ResultListeners;
 
 namespace Tap.Plugins._5Genesis.Misc.Steps
 {
-    [Display("Set Experiment ID", Groups: new string[] { "5Genesis", "Misc" })]
+    [Display("Set Execution ID", Groups: new string[] { "5Genesis", "Misc" })]
     public class SetExperimentIdStep : TestStep
     {
         #region Settings
@@ -21,25 +21,24 @@ namespace Tap.Plugins._5Genesis.Misc.Steps
         [Display("ResultListeners", Order: 1.0)]
         public List<ConfigurableResultListenerBase> ResultListeners { get; set; }
 
-        [Display("Experiment ID", Order: 1.1)]
-        public string ExperimentId { get; set; }
+        [Display("Execution ID", Order: 1.1)]
+        public string ExecutionId { get; set; }
 
         #endregion
         public SetExperimentIdStep() { }
 
-
         public override void Run()
         {
-            if (string.IsNullOrWhiteSpace(ExperimentId))
+            if (string.IsNullOrWhiteSpace(ExecutionId))
             {
-                Log.Error("Cannot set ExperimentId to an empty string.");
+                Log.Error("Cannot set ExecutionId to an empty string.");
             }
             else
             {
                 foreach (ConfigurableResultListenerBase resultListener in ResultListeners)
                 {
-                    Log.Info($"Setting ExperimentId to {ExperimentId} ({resultListener.Name})");
-                    resultListener.ExperimentId = this.ExperimentId;
+                    Log.Info($"Setting ExecutiontId to {ExecutionId} ({resultListener.Name})");
+                    resultListener.ExperimentId = this.ExecutionId;
                 }
             }
         }

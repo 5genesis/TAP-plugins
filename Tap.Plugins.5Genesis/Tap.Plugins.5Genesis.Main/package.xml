@@ -26,5 +26,7 @@ $(GitBranchVersion) - Gets the version number in the recommended format Major.Mi
     <File Path="5Genesis\Tap.Plugins.5Genesis.iPerfAgent.dll" Obfuscate="false" SetAssemblyInfo="Version"></File>
     <!-- Miscellaneous Plugin-->
     <File Path="5Genesis\Tap.Plugins.5Genesis.Misc.dll" Obfuscate="false" SetAssemblyInfo="Version"></File>
+    <!-- Year 1 demo -->
+    <File Path="5Genesis\Tap.Plugins.5Genesis.Y1Demo.dll" Obfuscate="false" SetAssemblyInfo="Version"></File>
   </Files>
 </Package>

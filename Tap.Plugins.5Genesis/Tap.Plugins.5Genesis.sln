@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.Influx
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.iPerfAgent", "Tap.Plugins.5Genesis.iPerfAgent\Tap.Plugins.5Genesis.iPerfAgent.csproj", "{99FB986D-2507-41E3-B0DE-DFFA39ED8D57}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.Y1Demo", "Tap.Plugins.5Genesis.Y1Demo\Tap.Plugins.5Genesis.Y1Demo.csproj", "{C38FB927-8BCF-4EA9-8770-745CF62EC3FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{99FB986D-2507-41E3-B0DE-DFFA39ED8D57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99FB986D-2507-41E3-B0DE-DFFA39ED8D57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99FB986D-2507-41E3-B0DE-DFFA39ED8D57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C38FB927-8BCF-4EA9-8770-745CF62EC3FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C38FB927-8BCF-4EA9-8770-745CF62EC3FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C38FB927-8BCF-4EA9-8770-745CF62EC3FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C38FB927-8BCF-4EA9-8770-745CF62EC3FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
