@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-using Keysight.Tap;
+using OpenTap;
 
 using Tap.Plugins._5Genesis.Misc.Extensions;
 

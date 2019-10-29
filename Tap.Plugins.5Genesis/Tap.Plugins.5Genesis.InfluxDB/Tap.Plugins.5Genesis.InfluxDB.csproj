@@ -36,6 +36,9 @@
     <Reference Include="InfluxDB.LineProtocol, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\InfluxDB.LineProtocol.1.1.0\lib\net45\InfluxDB.LineProtocol.dll</HintPath>
     </Reference>
+    <Reference Include="OpenTap">
+      <HintPath>$(TAP_PATH)\OpenTap.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
@@ -44,11 +47,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Keysight.Tap.Engine">
-      <HintPath>$(TAP_PATH)\Keysight.Tap.Engine.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="OpenTap">
+      <HintPath>$(TAP_PATH)\OpenTap.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,15 +43,12 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Keysight.Tap.Engine">
-      <HintPath>$(TAP_PATH)\Keysight.Tap.Engine.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-      <Private>False</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="package.xml" />
+    <None Include="package.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.txt" />
@@ -84,7 +84,7 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <UsingTask TaskName="Keysight.Tap.Sdk.MSBuild.PackageTask" AssemblyFile="$(TAP_PATH)\Keysight.Tap.Sdk.MSBuild.dll" />
+  <UsingTask TaskName="Keysight.OpenTap.Sdk.MSBuild.PackageTask" AssemblyFile="$(TAP_PATH)\Packages\SDK\Keysight.OpenTap.Sdk.MSBuild.dll" />
   <Target Name="AfterBuild" Condition="'$(Configuration)' == 'Release'">
     <GetAssemblyIdentity AssemblyFiles="$(TargetPath)">
       <Output TaskParameter="Assemblies" ItemName="TargetInfo" />

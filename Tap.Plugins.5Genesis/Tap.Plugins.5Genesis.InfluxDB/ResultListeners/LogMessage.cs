@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.IO;
-using Keysight.Tap;
+using OpenTap;
 
 using InfluxDB.LineProtocol.Client;
 using InfluxDB.LineProtocol.Payload;

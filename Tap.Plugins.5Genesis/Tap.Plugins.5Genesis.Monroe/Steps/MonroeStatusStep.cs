@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
-using Keysight.Tap;
+using OpenTap;
 using System.Text.RegularExpressions;
 using Tap.Plugins._5Genesis.Monroe.Instruments;
 using System.Net;
@@ -95,7 +95,7 @@ namespace Tap.Plugins._5Genesis.Monroe.Steps
                         else
                         {
                             Log.Debug($"Experiment {Experiment} status = {maybeStatus.Value} != {WaitFor.Value}. Continuing");
-                            TestPlan.Sleep(PollTime);
+                            TapThread.Sleep(PollTime);
                         }
                     }
                     else

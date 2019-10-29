@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
-using Keysight.Tap;
+using OpenTap;
 
 using RestSharp;
 using RestSharp.Extensions;
@@ -27,7 +27,6 @@ using Newtonsoft.Json;
 namespace Tap.Plugins._5Genesis.Monroe.Instruments
 {
     [Display("MONROE", Group: "5Genesis", Description: "MONROE Instrument")]
-    [ShortName("MONROE")]
     public class MonroeInstrument : Instrument
     {
         private RestClient client = null;
@@ -50,6 +49,8 @@ namespace Tap.Plugins._5Genesis.Monroe.Instruments
 
         public MonroeInstrument()
         {
+            Name = "MONROE";
+
             Host = "127.0.0.1";
             Port = 8080;
             Insecure = false;

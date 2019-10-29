@@ -12,7 +12,7 @@ using System.IO;
 using System.Security;
 using System.Text;
 using System.Text.RegularExpressions;
-using Keysight.Tap;
+using OpenTap;
 using Renci.SshNet;
 using Tap.Plugins._5Genesis.Misc.Extensions;
 
@@ -26,7 +26,6 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
     /// <remark>Sudo commands are run using a terminal session, and cannot be run in the background at the moment.</remark>
     /// </summary>
     [Display("SshInstrument", Group: "5Genesis", Description: "Basic SSH instrument")]
-    [ShortName("SSH")]
     public class SshInstrument : Instrument
     {
         private static TimeSpan fiveSecs = new TimeSpan(0, 0, 5);
@@ -60,6 +59,8 @@ namespace Tap.Plugins._5Genesis.SshInstrument.Instruments
         
         public SshInstrument()
         {
+            Name = "SSH";
+
             Host = User = string.Empty;
             Port = 22;
             Password = new Enabled<SecureString>() { IsEnabled = true };

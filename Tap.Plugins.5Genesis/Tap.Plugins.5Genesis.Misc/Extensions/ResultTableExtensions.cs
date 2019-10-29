@@ -9,7 +9,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using Keysight.Tap;
+using OpenTap;
 
 namespace Tap.Plugins._5Genesis.Misc.Extensions
 {
