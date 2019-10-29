@@ -39,6 +39,7 @@ namespace Tap.Plugins._5Genesis.Misc.Steps
 
         public SetExecutionMetadataStep()
         {
+            Slice = Scenario = TestCases = string.Empty;
             Notes = "Test execution";
         }
 

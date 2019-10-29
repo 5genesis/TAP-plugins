@@ -9,7 +9,7 @@ $(GitVersion) - Gets the version from Git.
 $(GitBranch) - Gets the branch name from Git.
 $(GitBranchVersion) - Gets the version number in the recommended format Major.Minor.Build-PreRelease+CommitHash.BranchName.
 -->
-<Package Name="5Genesis" xmlns="http://opentap.io/schemas/package" InfoLink="https://5genesis.eu/" Version="1.2.0">
+<Package Name="5Genesis" xmlns="http://opentap.io/schemas/package" InfoLink="https://5genesis.eu/" Version="1.2.1">
   <Description>5Genesis main TAP plugin.</Description>
   <Files>
     <File Path="5Genesis\Tap.Plugins.5Genesis.Main.dll">
