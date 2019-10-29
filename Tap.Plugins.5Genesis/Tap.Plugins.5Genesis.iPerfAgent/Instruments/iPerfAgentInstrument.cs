@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
-using Keysight.Tap;
+using OpenTap;
 
 using RestSharp;
 using RestSharp.Extensions;
@@ -27,7 +27,6 @@ using Newtonsoft.Json;
 namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
 {
     [Display("iPerf Agent", Group: "5Genesis", Description: "Remote iPerf Agent")]
-    [ShortName("iPerfA")]
     public class IPerfAgentInstrument : Instrument
     {
         private RestClient client = null;
@@ -44,6 +43,8 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
 
         public IPerfAgentInstrument()
         {
+            Name = "iPerfA";
+
             Host = "127.0.0.1";
             Port = 8080;
             

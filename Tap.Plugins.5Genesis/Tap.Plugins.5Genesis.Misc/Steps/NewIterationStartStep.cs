@@ -6,7 +6,7 @@
 //
 // This file cannot be modified or redistributed. This header cannot be removed.
 
-using Keysight.Tap;
+using OpenTap;
 using System;
 using System.Collections.Generic;
 using System.Xml.Serialization;

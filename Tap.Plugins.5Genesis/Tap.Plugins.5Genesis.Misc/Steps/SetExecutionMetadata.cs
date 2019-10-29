@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-using Keysight.Tap;
+using OpenTap;
 
 using Tap.Plugins._5Genesis.Misc.Extensions;
 
@@ -39,6 +39,7 @@ namespace Tap.Plugins._5Genesis.Misc.Steps
 
         public SetExecutionMetadataStep()
         {
+            Slice = Scenario = TestCases = string.Empty;
             Notes = "Test execution";
         }
 

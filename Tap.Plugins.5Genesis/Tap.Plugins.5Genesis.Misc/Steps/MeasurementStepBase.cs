@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Keysight.Tap;
+using OpenTap;
 
 namespace Tap.Plugins._5Genesis.Misc.Steps
 {
@@ -29,7 +29,7 @@ namespace Tap.Plugins._5Genesis.Misc.Steps
             switch (MeasurementMode)
             {
                 case WaitMode.Time:
-                    TestPlan.Sleep((int)(MeasurementTime * 1000));
+                    TapThread.Sleep((int)(MeasurementTime * 1000));
                     break;
                 default:
                     RunChildSteps();

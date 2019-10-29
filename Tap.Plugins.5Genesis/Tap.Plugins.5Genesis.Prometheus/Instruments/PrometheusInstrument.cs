@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
-using Keysight.Tap;
+using OpenTap;
 
 using RestSharp;
 using RestSharp.Extensions;
@@ -26,7 +26,6 @@ using Newtonsoft.Json;
 namespace Tap.Plugins._5Genesis.Prometheus.Instruments
 {
     [Display("Prometheus", Group: "5Genesis", Description: "Prometheus Instrument")]
-    [ShortName("PromQL")]
     public class PrometheusInstrument : Instrument
     {
         private RestClient client = null;
@@ -46,6 +45,8 @@ namespace Tap.Plugins._5Genesis.Prometheus.Instruments
 
         public PrometheusInstrument()
         {
+            Name = "PromQL";
+
             Host = "http://promgenesis.medianetlab.eu";
             Port = 80;
 

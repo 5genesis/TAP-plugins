@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 using System.IO;
-using Keysight.Tap;
+using OpenTap;
 
 using InfluxDB.LineProtocol.Client;
 using InfluxDB.LineProtocol.Payload;
@@ -62,7 +62,6 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
     }
 
     [Display("InfluxDB", Group: "5Genesis", Description: "InfluxDB result listener")]
-    [ShortName("INFLUX")]
     public class InfluxDbResultListener : ConfigurableResultListenerBase
     {
         private LineProtocolClient client = null;
@@ -113,6 +112,8 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 
         public InfluxDbResultListener()
         {
+            Name = "INFLUX";
+
             Address = "localhost";
             Port = 8086;
             Database = "mydb";
@@ -142,7 +143,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 
             this.startTime = planRun.StartTime.ToUniversalTime();
             this.baseTags = new Dictionary<string, string> {
-                { "appname", $"TAP ({TapVersion.GetTapEngineVersion().ToString()})" },
+                { "appname", $"TAP ({PluginManager.GetOpenTapAssembly().SemanticVersion.ToString()})" },
                 { "facility", Facility },
                 { "host", HostIP },
                 { "hostname", EngineSettings.Current.StationName }
@@ -244,7 +245,7 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 
         public override void OnTestPlanRunCompleted(TestPlanRun planRun, Stream logStream)
         {
-            string version = TapVersion.GetTapEngineVersion().ToString();
+            string version = PluginManager.GetOpenTapAssembly().SemanticVersion.ToString();
             string hostName = EngineSettings.Current.StationName;
 
             StreamReader reader = new StreamReader(logStream);

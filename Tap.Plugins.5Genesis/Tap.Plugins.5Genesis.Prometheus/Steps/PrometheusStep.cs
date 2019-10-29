@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.ComponentModel;
 
-using Keysight.Tap;
+using OpenTap;
 using Tap.Plugins._5Genesis.Prometheus.Instruments;
 using Tap.Plugins._5Genesis.Misc.Extensions;
 

@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
-using Keysight.Tap;
+using OpenTap;
 
 namespace Tap.Plugins._5Genesis.Misc.ResultListeners
 {

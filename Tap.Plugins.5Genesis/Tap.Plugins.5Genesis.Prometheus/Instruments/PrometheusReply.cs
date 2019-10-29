@@ -15,7 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Compression;
 using Newtonsoft.Json.Linq;
-using Keysight.Tap;
+using OpenTap;
 using Newtonsoft.Json;
 
 namespace Tap.Plugins._5Genesis.Prometheus.Instruments

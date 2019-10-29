@@ -7,7 +7,7 @@
 // This file cannot be modified or redistributed. This header cannot be removed.
 
 using System.Collections.Generic;
-using Keysight.Tap;
+using OpenTap;
 
 using Tap.Plugins._5Genesis.Misc.ResultListeners;
 

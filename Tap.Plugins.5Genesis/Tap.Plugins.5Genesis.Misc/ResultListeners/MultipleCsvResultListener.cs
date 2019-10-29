@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using Keysight.Tap;
+using OpenTap;
 using System.Xml.Serialization;
 using System.Text.RegularExpressions;
 
@@ -25,7 +25,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
     [Display("Multiple CSV result listener",
         Group: "5Genesis",
         Description: "Logs results to multiple CSV files, one for each kind of generated results.")]
-    [ShortName("MultiCSV")]
+  
     public class MultipleCsvResultListener : ConfigurableResultListenerBase
     {
         private const string RESULT_MACRO = "{ResultType}";
@@ -67,6 +67,8 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
 
         public MultipleCsvResultListener()
         {
+            Name = "MultiCSV";
+
             Separator = CsvSeparator.Comma;
             FilePath = DEFAULT_FILE_PATH;
             ExecutionId = UNDEFINED;
