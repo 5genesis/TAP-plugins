@@ -1,3 +1,8 @@
+**29/10/2019** [Version 1.2.1]
+
+ - Migrated to OpenTAP
+ - Fix exception on 'Set Execution Metadata' step
+
 **11/09/2019** [Version 1.1]
 
  - Add plugin, step for year 1 review MCS demo

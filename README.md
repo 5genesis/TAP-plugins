@@ -8,7 +8,7 @@ The packaged plugins can only depend on the standard TAP plugins, or on other 5G
 
 ## Requirements
 
- - [Keysight TAP 2018](https://www.keysight.com/en/pc-2873415/test-automation-platform-tap) (Tested on TAP 8.4)
+ - [OpenTAP](https://www.opentap.io/) (Tested on TAP 9.4)
  - [Visual Studio 2015 or 2017](https://visualstudio.microsoft.com/) (For development)
  
 ## Packaging a new TAP Plugin
