@@ -8,6 +8,7 @@ using OpenTap;
 
 namespace Tap.Plugins._5Genesis.Misc.Steps
 {
+    [AllowAnyChild()]
     public abstract class MeasurementStepBase : TestStep
     {
         public enum WaitMode { Time, Children }
