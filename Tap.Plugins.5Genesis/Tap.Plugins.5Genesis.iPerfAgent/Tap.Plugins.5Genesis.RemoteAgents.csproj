@@ -10,8 +10,8 @@
     <ProjectGuid>{99FB986D-2507-41E3-B0DE-DFFA39ED8D57}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Tap.Plugins._5Genesis.iPerfAgent</RootNamespace>
-    <AssemblyName>Tap.Plugins.5Genesis.iPerfAgent</AssemblyName>
+    <RootNamespace>Tap.Plugins._5Genesis.RemoteAgents</RootNamespace>
+    <AssemblyName>Tap.Plugins.5Genesis.RemoteAgents</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -52,9 +52,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Instruments\iPerfAgentReply.cs" />
     <Compile Include="Instruments\iPerfResult.cs" />
     <Compile Include="Instruments\iPerfAgentInstrument.cs" />
-    <Compile Include="Instruments\AgentReply.cs" />
+    <Compile Include="Instruments\AgentReplyBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Steps\iPerfAgentStep.cs" />
   </ItemGroup>

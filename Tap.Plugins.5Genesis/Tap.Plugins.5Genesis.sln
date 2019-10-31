@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.Promet
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.InfluxDB", "Tap.Plugins.5Genesis.InfluxDB\Tap.Plugins.5Genesis.InfluxDB.csproj", "{A86EF221-0E12-4E40-BED5-4258BC37FB24}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.iPerfAgent", "Tap.Plugins.5Genesis.iPerfAgent\Tap.Plugins.5Genesis.iPerfAgent.csproj", "{99FB986D-2507-41E3-B0DE-DFFA39ED8D57}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.RemoteAgents", "Tap.Plugins.5Genesis.iPerfAgent\Tap.Plugins.5Genesis.RemoteAgents.csproj", "{99FB986D-2507-41E3-B0DE-DFFA39ED8D57}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tap.Plugins.5Genesis.Y1Demo", "Tap.Plugins.5Genesis.Y1Demo\Tap.Plugins.5Genesis.Y1Demo.csproj", "{C38FB927-8BCF-4EA9-8770-745CF62EC3FC}"
 EndProject

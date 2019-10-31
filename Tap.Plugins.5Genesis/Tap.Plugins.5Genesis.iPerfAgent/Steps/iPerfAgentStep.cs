@@ -13,12 +13,12 @@ using System.Text;
 using System.ComponentModel;
 using OpenTap;
 
-using Tap.Plugins._5Genesis.iPerfAgent.Instruments;
+using Tap.Plugins._5Genesis.RemoteAgents.Instruments;
 using Tap.Plugins._5Genesis.Misc.Extensions;
 using Tap.Plugins._5Genesis.Misc.Steps;
 using System.Xml.Serialization;
 
-namespace Tap.Plugins._5Genesis.iPerfAgent.Steps
+namespace Tap.Plugins._5Genesis.RemoteAgents.Steps
 {
     [Display("iPerf Agent", Groups: new string[] { "5Genesis", "Agents" }, Description: "Step for controlling a iPerf agent installed on a remote machine.")]
     public class iPerfAgentStep : MeasurementStepBase

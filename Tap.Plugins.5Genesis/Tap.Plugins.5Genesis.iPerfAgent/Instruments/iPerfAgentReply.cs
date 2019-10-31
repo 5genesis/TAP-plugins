@@ -17,30 +17,11 @@ using System.IO.Compression;
 using Newtonsoft.Json.Linq;
 using OpenTap;
 
-namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
+namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
 {
-    public class AgentReply
+    public class iPerfAgentReply : AgentReplyBase<iPerfResult>
     {
-        public string Message { get; set; }
-
-        public string Status { get; set; }
-
-        public string Error { get; set; }
-
-        public HttpStatusCode HttpStatus { get; set; }
-
-        public string HttpStatusDescription { get; set; }
-
-        public string Content { get; set; }
-
-        public List<iPerfResult> Result { get; set; }
-
-        public bool Success
-        {
-            get { return ((int)HttpStatus >= 200) && ((int)HttpStatus <= 299); }
-        }
-
-        public ResultTable ResultTable
+        public override ResultTable ResultTable
         {
             get
             {

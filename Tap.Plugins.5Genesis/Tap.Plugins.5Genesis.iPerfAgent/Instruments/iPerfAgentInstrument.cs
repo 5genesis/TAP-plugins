@@ -24,7 +24,7 @@ using System.IO.Compression;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
+namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
 {
     [Display("iPerf Agent", Group: "5Genesis", Description: "Remote iPerf Agent")]
     public class IPerfAgentInstrument : Instrument
@@ -65,7 +65,7 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
             base.Close();
         }
 
-        public AgentReply SendRequest(string endpoint, Method method, object body = null)
+        public iPerfAgentReply SendRequest(string endpoint, Method method, object body = null)
         {
             Log.Debug($"Sending request: {method} - {endpoint}");
             if (body != null) { Log.Debug($"  Body: {JsonConvert.SerializeObject(body)}"); }
@@ -73,9 +73,9 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
             RestRequest request = new RestRequest(endpoint, method, DataFormat.Json);
             if (body != null) { request.AddJsonBody(body); }
 
-            IRestResponse<AgentReply> reply = client.Execute<AgentReply>(request, method);
+            IRestResponse<iPerfAgentReply> reply = client.Execute<iPerfAgentReply>(request, method);
 
-            AgentReply result = reply.Data ?? new AgentReply();
+            iPerfAgentReply result = reply.Data ?? new iPerfAgentReply();
             result.HttpStatus = reply.StatusCode;
             result.HttpStatusDescription = reply.StatusDescription;
             result.Content = reply.Content;
@@ -85,19 +85,19 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
 
         public bool Start(Dictionary<string, string> parameters)
         {
-            AgentReply reply = SendRequest("Iperf", Method.POST, parameters);
+            iPerfAgentReply reply = SendRequest("Iperf", Method.POST, parameters);
             return !checkErrors(reply);
         }
 
         public bool Stop()
         {
-            AgentReply reply = SendRequest("Close", Method.GET);
+            iPerfAgentReply reply = SendRequest("Close", Method.GET);
             return !checkErrors(reply);
         }
 
         public bool? IsRunning()
         {
-            AgentReply reply = SendRequest("IsRunning", Method.GET);
+            iPerfAgentReply reply = SendRequest("IsRunning", Method.GET);
 
             if (checkErrors(reply)) { return null; }
             return reply.Message.Contains("True");
@@ -105,7 +105,7 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
 
         public Tuple<ResultTable, bool> GetResults()
         {
-            AgentReply reply = SendRequest("LastJsonResult", Method.GET);
+            iPerfAgentReply reply = SendRequest("LastJsonResult", Method.GET);
             
             bool errors = checkErrors(reply);
 
@@ -114,14 +114,14 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
 
         public string GetError()
         {
-            AgentReply reply = SendRequest("LastError", Method.GET);
+            iPerfAgentReply reply = SendRequest("LastError", Method.GET);
 
             bool errors = checkErrors(reply); // checkErrors will not look the 'Error' variable if 'Status' != 'Error'
 
             return errors? reply.Error : null;
         }
 
-        private bool checkErrors(AgentReply reply)
+        private bool checkErrors(iPerfAgentReply reply)
         {
             if (!reply.Success)
             {
