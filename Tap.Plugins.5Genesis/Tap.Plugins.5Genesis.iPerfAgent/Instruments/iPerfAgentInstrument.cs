@@ -103,11 +103,17 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
             return reply.Message.Contains("True");
         }
 
-        public Tuple<ResultTable, bool> GetResults()
+        public Tuple<ResultTable, bool> GetResults(string role = null)
         {
             iPerfAgentReply reply = SendRequest("LastJsonResult", Method.GET);
             
             bool errors = checkErrors(reply);
+
+            // Set the Role of the instance so that it's included in the result name
+            if (!string.IsNullOrWhiteSpace(role))
+            {
+                reply.Role = role;
+            }
 
             return new Tuple<ResultTable, bool>(reply.ResultTable, !errors);
         }

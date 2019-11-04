@@ -164,7 +164,7 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Steps
 
         private void retrieveResults()
         {
-            var reply = Instrument.GetResults();
+            var reply = Instrument.GetResults(Role.ToString());
             ResultTable resultTable = reply.Item1;
             bool success = reply.Item2;
 

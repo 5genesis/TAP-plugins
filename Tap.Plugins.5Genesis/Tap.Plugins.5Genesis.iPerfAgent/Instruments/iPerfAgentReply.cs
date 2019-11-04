@@ -21,6 +21,8 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
 {
     public class iPerfAgentReply : AgentReplyBase<iPerfResult>
     {
+        public string Role { get; set; } = string.Empty;
+
         public override ResultTable ResultTable
         {
             get
@@ -43,12 +45,15 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
                 ResultColumn[] columns = new ResultColumn[] {
                     new ResultColumn("Timestamp", timestamps.ToArray()),
                     new ResultColumn("DateTime", datetimes.ToArray()),
-                    new ResultColumn("Throughput", throughput.ToArray()),
-                    new ResultColumn("Packet Loss", packetloss.ToArray()),
-                    new ResultColumn("Jitter", jitter.ToArray()),
+                    new ResultColumn("Throughput (Mbps)", throughput.ToArray()),
+                    new ResultColumn("Packet Loss (%)", packetloss.ToArray()),
+                    new ResultColumn("Jitter (ms)", jitter.ToArray()),
                 };
 
-                return new ResultTable("iPerf", columns);
+                string resultName = "Remote iPerf Agent";
+                if (!string.IsNullOrWhiteSpace(Role)) { resultName += $" {Role}"; }
+
+                return new ResultTable(resultName, columns);
             }
         }
     }
