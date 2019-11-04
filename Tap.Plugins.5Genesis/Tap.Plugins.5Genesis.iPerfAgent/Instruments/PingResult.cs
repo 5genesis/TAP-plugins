@@ -20,13 +20,33 @@ using Tap.Plugins._5Genesis.Misc.Extensions;
 
 namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
 {
-    public class iPerfResult
+    public class PingResult
     {
-        public double Jitter { get; set; }
+        public int Total { get; set; }
 
-        public double PacketLoss { get; set; }
+        public int Success { get; set; }
 
-        public double Throughput { get; set; }
+        public List<SinglePingResult> icmp_replies { get; set; }
+
+        public List<SinglePingResult> IcmpReplies {
+            get { return icmp_replies; }
+        }
+    }
+
+    public class SinglePingResult
+    {
+        public double time { get; set; }
+
+        public double Delay {
+            get { return time; }
+        }
+
+        public int icmp_seq { get; set; }
+        public int IcmpSeq {
+            get { return icmp_seq; }
+        }
+
+        public bool Duplicate { get; set; }
 
         public double Timestamp { get; set; }
 

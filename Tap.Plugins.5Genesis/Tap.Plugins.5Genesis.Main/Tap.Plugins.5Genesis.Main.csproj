@@ -58,9 +58,9 @@
       <Project>{a86ef221-0e12-4e40-bed5-4258bc37fb24}</Project>
       <Name>Tap.Plugins.5Genesis.InfluxDB</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tap.Plugins.5Genesis.iPerfAgent\Tap.Plugins.5Genesis.iPerfAgent.csproj">
+    <ProjectReference Include="..\Tap.Plugins.5Genesis.iPerfAgent\Tap.Plugins.5Genesis.RemoteAgents.csproj">
       <Project>{99fb986d-2507-41e3-b0de-dffa39ed8d57}</Project>
-      <Name>Tap.Plugins.5Genesis.iPerfAgent</Name>
+      <Name>Tap.Plugins.5Genesis.RemoteAgents</Name>
     </ProjectReference>
     <ProjectReference Include="..\Tap.Plugins.5Genesis.Misc\Tap.Plugins.5Genesis.Misc.csproj">
       <Project>{759ff8ce-a56e-477e-afb5-112c8bffd720}</Project>

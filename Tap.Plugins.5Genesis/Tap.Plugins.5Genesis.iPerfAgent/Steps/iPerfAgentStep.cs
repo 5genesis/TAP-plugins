@@ -13,28 +13,16 @@ using System.Text;
 using System.ComponentModel;
 using OpenTap;
 
-using Tap.Plugins._5Genesis.iPerfAgent.Instruments;
+using Tap.Plugins._5Genesis.RemoteAgents.Instruments;
 using Tap.Plugins._5Genesis.Misc.Extensions;
 using Tap.Plugins._5Genesis.Misc.Steps;
 using System.Xml.Serialization;
 
-namespace Tap.Plugins._5Genesis.iPerfAgent.Steps
+namespace Tap.Plugins._5Genesis.RemoteAgents.Steps
 {
     [Display("iPerf Agent", Groups: new string[] { "5Genesis", "Agents" }, Description: "Step for controlling a iPerf agent installed on a remote machine.")]
-    public class iPerfAgentStep : MeasurementStepBase
+    public class iPerfAgentStep : AgentStepBase
     {
-        public enum ActionEnum {
-            Start,
-            Stop,
-            Measure,
-            [Display("Check if Running")]
-            CheckRunning,
-            [Display("Retrieve Results")]
-            RetrieveResults,
-            [Display("Retrieve Error")]
-            RetrieveErrors
-        }
-
         public enum RoleEnum {
             Client,
             Server
@@ -45,15 +33,9 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Steps
         [Display("Agent", Group: "Configuration", Order: 1.0)]
         public IPerfAgentInstrument Instrument { get; set; }
 
-        [Display("Action", Group: "Configuration", Order: 1.1)]
-        public ActionEnum Action { get; set; }
+        #endregion
 
         #region Parameters
-
-        [XmlIgnore]
-        public bool HasParameters {
-            get { return (Action == ActionEnum.Start || Action == ActionEnum.Measure); }
-        }
 
         [EnabledIf("HasParameters", true, HideIfDisabled = true)]
         [Display("Role", Group: "Parameters", Order: 2.0)]
@@ -81,42 +63,8 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Steps
 
         #endregion
 
-        #region Measurement
-
-        public override bool HideMeasurement { get { return Action != ActionEnum.Measure; } }
-
-        // Measurement properties have order 50.0 and 50.1
-
-        #endregion
-
-        #region CheckRunning
-
-        [Display("Verdict when running", Group: "Check if Running", Order: 60.0)]
-        [EnabledIf("Action", ActionEnum.CheckRunning, HideIfDisabled = true)]
-        public Verdict VerdictOnRunning { get; set; }
-
-        [Display("Verdict when idle", Group: "Check if Running", Order: 60.1)]
-        [EnabledIf("Action", ActionEnum.CheckRunning, HideIfDisabled = true)]
-        public Verdict VerdictOnIdle { get; set; }
-
-        #endregion
-
-        [Display("Verdict on error", Group: "Errors", Order: 70.0)]
-        public Verdict VerdictOnError { get; set; }
-
-        #endregion
-
-
         public iPerfAgentStep()
         {
-            Action = ActionEnum.Measure;
-            MeasurementMode = WaitMode.Time;
-            MeasurementTime = 4.0;
-
-            VerdictOnError = Verdict.NotSet;
-            VerdictOnRunning = Verdict.Pass;
-            VerdictOnIdle = Verdict.Inconclusive;
-
             Role = RoleEnum.Client;
             Host = "127.0.0.1";
             Port = 5001;
@@ -124,47 +72,21 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Steps
             ExtraParameters = string.Empty;
         }
 
-        public override void Run()
+        public override void PrePlanRun()
         {
-            switch (Action)
-            {
-                case ActionEnum.Start: start(); break;
-                case ActionEnum.Stop: stop(); break;
-                case ActionEnum.CheckRunning: checkRunning(); break;
-                case ActionEnum.RetrieveResults: retrieveResults(); break;
-                case ActionEnum.RetrieveErrors: retrieveError(); break;
-                case ActionEnum.Measure: measure(); break;
-            }
+            base.PrePlanRun();
+            GenericAgent = (IAgentInstrument)Instrument;
         }
 
-        private void start()
+        protected override void start()
         {
             bool success = Instrument.Start(parsedParameters());
             if (!success) { UpgradeVerdict(VerdictOnError); }
         }
 
-        private void stop()
+        protected override void retrieveResults()
         {
-            bool success = Instrument.Stop();
-            if (!success) { UpgradeVerdict(VerdictOnError); }
-        }
-
-        private void checkRunning()
-        {
-            bool? result = Instrument.IsRunning();
-            if (result.HasValue)
-            {
-                UpgradeVerdict(result.Value ? VerdictOnRunning : VerdictOnIdle);
-            }
-            else
-            {
-                UpgradeVerdict(VerdictOnError);
-            }
-        }
-
-        private void retrieveResults()
-        {
-            var reply = Instrument.GetResults();
+            var reply = Instrument.GetResults(Role.ToString());
             ResultTable resultTable = reply.Item1;
             bool success = reply.Item2;
 
@@ -174,27 +96,6 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Steps
             {
                 resultTable.PublishToSource(Results);
             }
-        }
-
-        private void retrieveError()
-        {
-            string error = Instrument.GetError();
-
-            if (error != null)
-            {
-                Log.Info("iPerfAgent reported error: {error}");
-            }
-            else { UpgradeVerdict(VerdictOnError); }
-        }
-
-        private void measure()
-        {
-            start();
-
-            MeasurementWait();
-
-            stop();
-            retrieveResults();
         }
 
         private Dictionary<string, string> parsedParameters()

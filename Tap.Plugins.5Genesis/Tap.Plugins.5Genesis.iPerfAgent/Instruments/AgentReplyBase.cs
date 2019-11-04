@@ -15,23 +15,31 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Compression;
 using Newtonsoft.Json.Linq;
-
-using Tap.Plugins._5Genesis.Misc.Extensions;
+using OpenTap;
 
 namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
 {
-    public class iPerfResult
+    public abstract class AgentReplyBase<T>
     {
-        public double Jitter { get; set; }
+        public string Message { get; set; }
 
-        public double PacketLoss { get; set; }
+        public string Status { get; set; }
 
-        public double Throughput { get; set; }
+        public string Error { get; set; }
 
-        public double Timestamp { get; set; }
+        public HttpStatusCode HttpStatus { get; set; }
 
-        public DateTime DateTime {
-            get { return Timestamp.ToDateTime(); }
+        public string HttpStatusDescription { get; set; }
+
+        public string Content { get; set; }
+
+        public List<T> Result { get; set; }
+
+        public bool Success
+        {
+            get { return ((int)HttpStatus >= 200) && ((int)HttpStatus <= 299); }
         }
+
+        public abstract ResultTable ResultTable { get; }
     }
 }

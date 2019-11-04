@@ -1,3 +1,7 @@
+**04/11/2019** [Version 1.2.2]
+
+ - Implementation of the Ping Agent plugin (code for the agent can be found in the [malaga-platform](https://gitlab.fokus.fraunhofer.de/5genesis/malaga-platform) repository).
+
 **29/10/2019** [Version 1.2.1]
 
  - Migrated to OpenTAP

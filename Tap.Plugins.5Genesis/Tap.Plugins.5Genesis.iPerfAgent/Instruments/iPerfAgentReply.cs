@@ -17,30 +17,13 @@ using System.IO.Compression;
 using Newtonsoft.Json.Linq;
 using OpenTap;
 
-namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
+namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
 {
-    public class AgentReply
+    public class iPerfAgentReply : AgentReplyBase<iPerfResult>
     {
-        public string Message { get; set; }
+        public string Role { get; set; } = string.Empty;
 
-        public string Status { get; set; }
-
-        public string Error { get; set; }
-
-        public HttpStatusCode HttpStatus { get; set; }
-
-        public string HttpStatusDescription { get; set; }
-
-        public string Content { get; set; }
-
-        public List<iPerfResult> Result { get; set; }
-
-        public bool Success
-        {
-            get { return ((int)HttpStatus >= 200) && ((int)HttpStatus <= 299); }
-        }
-
-        public ResultTable ResultTable
+        public override ResultTable ResultTable
         {
             get
             {
@@ -62,12 +45,15 @@ namespace Tap.Plugins._5Genesis.iPerfAgent.Instruments
                 ResultColumn[] columns = new ResultColumn[] {
                     new ResultColumn("Timestamp", timestamps.ToArray()),
                     new ResultColumn("DateTime", datetimes.ToArray()),
-                    new ResultColumn("Throughput", throughput.ToArray()),
-                    new ResultColumn("Packet Loss", packetloss.ToArray()),
-                    new ResultColumn("Jitter", jitter.ToArray()),
+                    new ResultColumn("Throughput (Mbps)", throughput.ToArray()),
+                    new ResultColumn("Packet Loss (%)", packetloss.ToArray()),
+                    new ResultColumn("Jitter (ms)", jitter.ToArray()),
                 };
 
-                return new ResultTable("iPerf", columns);
+                string resultName = "Remote iPerf Agent";
+                if (!string.IsNullOrWhiteSpace(Role)) { resultName += $" {Role}"; }
+
+                return new ResultTable(resultName, columns);
             }
         }
     }

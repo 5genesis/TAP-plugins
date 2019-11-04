@@ -32,8 +32,8 @@ $(GitBranchVersion) - Gets the version number in the recommended format Major.Mi
     <File Path="5Genesis\Tap.Plugins.5Genesis.InfluxDB.dll">
       <SetAssemblyInfo Attributes="Version"/>
     </File>
-    <!-- iPerf Agent Plugin-->
-    <File Path="5Genesis\Tap.Plugins.5Genesis.iPerfAgent.dll">
+    <!-- Remote Agents Plugin-->
+    <File Path="5Genesis\Tap.Plugins.5Genesis.RemoteAgents.dll">
       <SetAssemblyInfo Attributes="Version"/>
     </File>
     <!-- Miscellaneous Plugin-->
