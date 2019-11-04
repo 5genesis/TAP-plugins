@@ -45,13 +45,14 @@ The result listener will then look for matching column names in the results and 
 
  - [InfluxDb](https://www.influxdata.com/) (Tested on version 1.7.6)
 
-### Tap.Plugins.5Genesis.iPerfAgent
+### Tap.Plugins.5Genesis.RemoteAgents
 
-Provides an instrument an step for controlling an iPerf Agent installed on a remote machine.
+Provides instruments and steps for controlling the [iPerf and Ping Agents](https://gitlab.fokus.fraunhofer.de/5genesis/malaga-platform) installed on a remote machine.
 
 ##### Requirements
 
  - [iPerfAgent](https://gitlab.fokus.fraunhofer.de/5genesis/malaga-platform) version 1.0.2
+ - [pingAgent](https://gitlab.fokus.fraunhofer.de/5genesis/malaga-platform) version 1.0.1
 
 ### Tap.Plugins.5Genesis.Misc
 
