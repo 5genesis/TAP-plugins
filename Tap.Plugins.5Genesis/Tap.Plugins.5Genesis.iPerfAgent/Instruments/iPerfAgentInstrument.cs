@@ -27,7 +27,7 @@ using Newtonsoft.Json;
 namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
 {
     [Display("iPerf Agent", Group: "5Genesis", Description: "Remote iPerf Agent")]
-    public class IPerfAgentInstrument : Instrument
+    public class IPerfAgentInstrument : Instrument, IAgentInstrument
     {
         private RestClient client = null;
 
