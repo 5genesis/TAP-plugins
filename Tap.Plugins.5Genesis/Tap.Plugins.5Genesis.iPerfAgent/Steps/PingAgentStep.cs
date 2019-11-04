@@ -69,13 +69,15 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Steps
         {
             var reply = Instrument.GetResults();
             ResultTable resultTable = reply.Item1;
-            bool success = reply.Item2;
+            ResultTable aggregatedTable = reply.Item2;
+            bool success = reply.Item3;
 
             if (!success) { UpgradeVerdict(VerdictOnError); }
             else if (resultTable.Rows == 0) { Log.Warning("No iPerf results retrieved"); }
             else
             {
                 resultTable.PublishToSource(Results);
+                aggregatedTable.PublishToSource(Results);
             }
         }
     }

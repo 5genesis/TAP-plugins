@@ -57,7 +57,7 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
             string endpoint = $"Ping/{parameters["Target"]}";
             if (parameters["PacketSize"] != "0")
             {
-                endpoint += $"/PacketSize/{parameters["PacketSize"]}";
+                endpoint += $"/Size/{parameters["PacketSize"]}";
             }
 
             PingAgentReply reply = SendRequest(endpoint, Method.GET);
@@ -78,13 +78,13 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
             return reply.Message.Contains("True");
         }
 
-        public Tuple<ResultTable, bool> GetResults()
+        public Tuple<ResultTable, ResultTable, bool> GetResults()
         {
             PingAgentReply reply = SendRequest("LastJsonResult", Method.GET);
             
             bool errors = checkErrors(reply);
 
-            return new Tuple<ResultTable, bool>(reply.ResultTable, !errors);
+            return new Tuple<ResultTable, ResultTable, bool>(reply.ResultTable, reply.AggregatedResultTable, !errors);
         }
 
         public override string GetError()
