@@ -13,7 +13,6 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
         bool Start(Dictionary<string, string> parameters);
         bool Stop();
         bool? IsRunning();
-        Tuple<ResultTable, bool> GetResults(string instance = null);
         string GetError();
 
         // SendRequest() and GetResults() do not have to appear on the generic agent

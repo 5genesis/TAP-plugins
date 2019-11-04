@@ -18,7 +18,7 @@ using RestSharp.Extensions;
 using System.Net;
 using System.Security;
 
-
+//using Tap.Plugins._5Genesis.Misc.Extensions;
 using System.IO;
 using System.IO.Compression;
 using Newtonsoft.Json.Linq;
@@ -26,16 +26,15 @@ using Newtonsoft.Json;
 
 namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
 {
-    [Display("iPerf Agent", Group: "5Genesis", Description: "Remote iPerf Agent")]
-    public class IPerfAgentInstrument : AgentInstrumentBase
+    [Display("Ping Agent", Group: "5Genesis", Description: "Remote Ping Agent")]
+    public class PingAgentInstrument : AgentInstrumentBase
     {
-
-        public IPerfAgentInstrument() : base()
+        public PingAgentInstrument() : base()
         {
-            Name = "iPerfA";
+            Name = "PingA";
         }
 
-        public iPerfAgentReply SendRequest(string endpoint, Method method, object body = null)
+        public PingAgentReply SendRequest(string endpoint, Method method, object body = null)
         {
             Log.Debug($"Sending request: {method} - {endpoint}");
             if (body != null) { Log.Debug($"  Body: {JsonConvert.SerializeObject(body)}"); }
@@ -43,9 +42,9 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
             RestRequest request = new RestRequest(endpoint, method, DataFormat.Json);
             if (body != null) { request.AddJsonBody(body); }
 
-            IRestResponse<iPerfAgentReply> reply = client.Execute<iPerfAgentReply>(request, method);
+            IRestResponse<PingAgentReply> reply = client.Execute<PingAgentReply>(request, method);
 
-            iPerfAgentReply result = reply.Data ?? new iPerfAgentReply();
+            PingAgentReply result = reply.Data ?? new PingAgentReply();
             result.HttpStatus = reply.StatusCode;
             result.HttpStatusDescription = reply.StatusDescription;
             result.Content = reply.Content;
@@ -55,49 +54,49 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
 
         public override bool Start(Dictionary<string, string> parameters)
         {
-            iPerfAgentReply reply = SendRequest("Iperf", Method.POST, parameters);
+            string endpoint = $"Ping/{parameters["Target"]}";
+            if (parameters["PacketSize"] != "0")
+            {
+                endpoint += $"/PacketSize/{parameters["PacketSize"]}";
+            }
+
+            PingAgentReply reply = SendRequest(endpoint, Method.GET);
             return !checkErrors(reply);
         }
 
         public override bool Stop()
         {
-            iPerfAgentReply reply = SendRequest("Close", Method.GET);
+            PingAgentReply reply = SendRequest("Close", Method.GET);
             return !checkErrors(reply);
         }
 
         public override bool? IsRunning()
         {
-            iPerfAgentReply reply = SendRequest("IsRunning", Method.GET);
+            PingAgentReply reply = SendRequest("IsRunning", Method.GET);
 
             if (checkErrors(reply)) { return null; }
             return reply.Message.Contains("True");
         }
 
-        public Tuple<ResultTable, bool> GetResults(string role = null)
+        public Tuple<ResultTable, bool> GetResults()
         {
-            iPerfAgentReply reply = SendRequest("LastJsonResult", Method.GET);
+            PingAgentReply reply = SendRequest("LastJsonResult", Method.GET);
             
             bool errors = checkErrors(reply);
-
-            // Set the Role of the instance so that it's included in the result name
-            if (!string.IsNullOrWhiteSpace(role))
-            {
-                reply.Role = role;
-            }
 
             return new Tuple<ResultTable, bool>(reply.ResultTable, !errors);
         }
 
         public override string GetError()
         {
-            iPerfAgentReply reply = SendRequest("LastError", Method.GET);
+            PingAgentReply reply = SendRequest("LastError", Method.GET);
 
             bool errors = checkErrors(reply); // checkErrors will not look the 'Error' variable if 'Status' != 'Error'
 
             return errors? reply.Error : null;
         }
 
-        private bool checkErrors(iPerfAgentReply reply)
+        private bool checkErrors(PingAgentReply reply)
         {
             if (!reply.Success)
             {
@@ -111,5 +110,6 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
             }
             return false;
         }
+
     }
 }

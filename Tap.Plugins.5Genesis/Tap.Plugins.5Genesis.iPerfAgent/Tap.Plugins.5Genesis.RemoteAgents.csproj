@@ -53,12 +53,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Instruments\IAgentInstrument.cs" />
+    <Compile Include="Instruments\AgentInstrumentBase.cs" />
+    <Compile Include="Instruments\PingAgentReply.cs" />
+    <Compile Include="Instruments\PingResult.cs" />
+    <Compile Include="Instruments\PingAgentInstrument.cs" />
     <Compile Include="Instruments\iPerfAgentReply.cs" />
     <Compile Include="Instruments\iPerfResult.cs" />
     <Compile Include="Instruments\iPerfAgentInstrument.cs" />
     <Compile Include="Instruments\AgentReplyBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Steps\AgentStepBase.cs" />
+    <Compile Include="Steps\PingAgentStep.cs" />
     <Compile Include="Steps\iPerfAgentStep.cs" />
   </ItemGroup>
   <ItemGroup>
