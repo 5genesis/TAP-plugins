@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ComponentModel;
-using Keysight.Tap;
+using OpenTap;
 using System.IO;
 using System.Text.RegularExpressions;
 
