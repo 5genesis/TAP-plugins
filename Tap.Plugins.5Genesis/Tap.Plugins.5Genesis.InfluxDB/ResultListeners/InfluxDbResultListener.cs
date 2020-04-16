@@ -274,15 +274,22 @@ namespace Tap.Plugins._5Genesis.InfluxDB.ResultListeners
 
         private void sendPayload(LineProtocolPayload payload, int count, string kind)
         {
-            Log.Info($"Sending {count} {kind} to {Name}");
-            try
+            if (count > 0)
             {
-                LineProtocolWriteResult result = this.client.WriteAsync(payload).GetAwaiter().GetResult();
-                if (!result.Success) { throw new Exception(result.ErrorMessage); }
+                Log.Info($"Sending {count} {kind} to {Name}");
+                try
+                {
+                    LineProtocolWriteResult result = this.client.WriteAsync(payload).GetAwaiter().GetResult();
+                    if (!result.Success) { throw new Exception(result.ErrorMessage); }
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Error while sending payload: {e.Message}{(e.InnerException != null ? $" - {e.InnerException.Message}" : "")}");
+                }
             }
-            catch (Exception e)
+            else
             {
-                Log.Error($"Error while sending payload: {e.Message}{(e.InnerException != null ? $" - {e.InnerException.Message}" : "")}");
+                Log.Warning($"No {kind} to send to {Name}");
             }
         }
 
