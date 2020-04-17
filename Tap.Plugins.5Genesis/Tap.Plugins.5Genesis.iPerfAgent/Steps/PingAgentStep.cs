@@ -38,7 +38,16 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Steps
         public string Target { get; set; }
 
         [EnabledIf("HasParameters", true, HideIfDisabled = true)]
-        [Display("Packet Size", Group: "Parameters", Order: 2.1)]
+        [Display("Report Interval", Group: "Parameters", Order: 2.1)]
+        [Unit("s")]
+        public double Interval{ get; set; }
+
+        [EnabledIf("HasParameters", true, HideIfDisabled = true)]
+        [Display("TTL", Group: "Parameters", Order: 2.2, Description: "Set to 0 to use ping's default")]
+        public int Ttl { get; set; }
+
+        [EnabledIf("HasParameters", true, HideIfDisabled = true)]
+        [Display("Packet Size", Group: "Parameters", Order: 2.3, Description: "Set to 0 to use ping's default")]
         public int PacketSize { get; set; }
 
         #endregion
@@ -47,6 +56,8 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Steps
         {
             Target = "8.8.8.8";
             PacketSize = 0;
+            Ttl = 0;
+            Interval = 1.0;
         }
 
         public override void PrePlanRun()
@@ -58,7 +69,10 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Steps
         protected override void start()
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>() {
-                {"Target", Target}, {"PacketSize", PacketSize.ToString() }
+                {"Target", Target},
+                {"size", PacketSize.ToString()},
+                {"ttl", Ttl.ToString()},
+                {"interval", Interval.ToString()}
             };
 
             bool success = Instrument.Start(parameters);
