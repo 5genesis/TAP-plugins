@@ -56,7 +56,12 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Steps
         public double MaxRunTime { get; set; }
 
         [EnabledIf("HasParameters", true, HideIfDisabled = true)]
-        [Display("Extra Parameters", Group: "Parameters", Order: 2.4,
+        [Display("Report interval", Group: "Parameters", Order: 2.4)]
+        [Unit("s")]
+        public int Interval { get; set; }
+        
+        [EnabledIf("HasParameters", true, HideIfDisabled = true)]
+        [Display("Extra Parameters", Group: "Parameters", Order: 2.5,
             Description: "Extra parameters to pass to iPerf. Separate parameters with ';', separate keys/values with space\n" + 
                          "Example: '-P 4; -u; -B 192.168.2.1'")]
         public string ExtraParameters { get; set; }
@@ -69,7 +74,10 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Steps
             Host = "127.0.0.1";
             Port = 5001;
             MaxRunTime = 99999;
+            Interval = 1;
             ExtraParameters = string.Empty;
+
+            Rules.Add(() => (Interval > 0), "Must be greater than 1", "Interval");
         }
 
         public override void PrePlanRun()
@@ -111,6 +119,7 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Steps
             }
 
             res.Add("-p", Port.ToString());
+            res.Add("-i", Interval.ToString());
             res.Add("-t", MaxRunTime.ToString());
 
             foreach (string parameter in ExtraParameters.Split(semicolon, StringSplitOptions.RemoveEmptyEntries))

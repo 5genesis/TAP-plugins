@@ -34,14 +34,21 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
             Name = "PingA";
         }
 
-        public PingAgentReply SendRequest(string endpoint, Method method, object body = null)
+        public PingAgentReply SendRequest(string endpoint, Method method, Dictionary<string, string> parameters = null)
         {
             Log.Debug($"Sending request: {method} - {endpoint}");
-            if (body != null) { Log.Debug($"  Body: {JsonConvert.SerializeObject(body)}"); }
-
             RestRequest request = new RestRequest(endpoint, method, DataFormat.Json);
-            if (body != null) { request.AddJsonBody(body); }
 
+            if (parameters != null) {
+                string logString = "  Parameters: ";
+                foreach (var param in parameters)
+                {
+                    request.AddParameter(param.Key, param.Value);
+                    logString += $"{param.Key}:{param.Value}; ";
+                }
+                Log.Debug(logString);
+            }
+            
             IRestResponse<PingAgentReply> reply = client.Execute<PingAgentReply>(request, method);
 
             PingAgentReply result = reply.Data ?? new PingAgentReply();
@@ -54,13 +61,10 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
 
         public override bool Start(Dictionary<string, string> parameters)
         {
-            string endpoint = $"Ping/{parameters["Target"]}";
-            if (parameters["PacketSize"] != "0")
-            {
-                endpoint += $"/Size/{parameters["PacketSize"]}";
-            }
+            string target = parameters["Target"];
+            parameters.Remove("Target");
 
-            PingAgentReply reply = SendRequest(endpoint, Method.GET);
+            PingAgentReply reply = SendRequest($"Ping/{target}", Method.GET, parameters);
             return !checkErrors(reply);
         }
 
