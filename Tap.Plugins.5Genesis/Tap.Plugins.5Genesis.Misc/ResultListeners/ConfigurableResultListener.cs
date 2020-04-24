@@ -98,7 +98,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
             return list.ToArray();
         }
 
-        public string Sanitize(string value, string replacement)
+        public static string Sanitize(string value, string replacement = "_")
         {
             return VALID_CHARS.Replace(value, replacement);
         }
