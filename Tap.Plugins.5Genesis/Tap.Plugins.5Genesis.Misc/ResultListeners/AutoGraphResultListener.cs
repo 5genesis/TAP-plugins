@@ -20,7 +20,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
 {
     [Display("AutoGraph result listener", Group: "5Genesis",
         Description: "Generates AutoGraph information based on configuration and published results")]
-      public class AutoGraphResultListener : ResultListener
+    public class AutoGraphResultListener : ResultListener
     {
         private enum AutoGraphType { None, Single, Gauge, Lines, Bars }
 
@@ -63,7 +63,6 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
             }
         }
 
-
         private Dictionary<string, List<AutoGraphColumn>> measurements;
         
         public AutoGraphResultListener()
@@ -92,7 +91,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
             foreach (ResultColumn column in result.Columns)
             {
                 AutoGraphColumn graph = new AutoGraphColumn(table, column);
-                Log.Debug(graph.ToString());
+                
                 if (graph.Type != AutoGraphType.None)
                 {
                     if (!measurements.ContainsKey(table))
@@ -109,6 +108,25 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
         public override void OnTestPlanRunCompleted(TestPlanRun planRun, Stream logStream)
         {
             base.OnTestPlanRunCompleted(planRun, logStream);
+
+            int tables = measurements.Keys.Count;
+            int columns = 0;
+
+            foreach (var pair in measurements)
+            {
+                columns += pair.Value.Count;
+            }
+
+            Log.Info($"- AutoGraph values detected: {columns} ({tables} tables)-");
+            foreach (var pair in measurements)
+            {
+                string table = pair.Key;
+                foreach (AutoGraphColumn column in pair.Value)
+                {
+                    Log.Info("AutoGraph: " + column.ToString());
+                }
+            }
+            Log.Info("- AutoGraph end -");
 
             measurements = null;
         }
