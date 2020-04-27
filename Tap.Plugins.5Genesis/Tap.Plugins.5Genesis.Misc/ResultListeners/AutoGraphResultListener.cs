@@ -61,9 +61,16 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
             {
                 return $"Gr.{Type} '{Table}'-'{Column}'({Unit})";
             }
+
+            public override bool Equals(object obj)
+            {
+                return obj != null && obj.GetType() == typeof(AutoGraphColumn) && this.ToString() == obj.ToString();
+            }
+
+            public override int GetHashCode() { return this.ToString().GetHashCode(); }
         }
 
-        private Dictionary<string, List<AutoGraphColumn>> measurements;
+        private Dictionary<string, HashSet<AutoGraphColumn>> measurements;
         
         public AutoGraphResultListener()
         {
@@ -74,7 +81,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
 
         public override void OnTestPlanRunStart(TestPlanRun planRun)
         {
-            measurements = new Dictionary<string, List<AutoGraphColumn>>();
+            measurements = new Dictionary<string, HashSet<AutoGraphColumn>>();
 
             base.OnTestPlanRunStart(planRun);
         }
@@ -96,7 +103,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
                 {
                     if (!measurements.ContainsKey(table))
                     {
-                        measurements[table] = new List<AutoGraphColumn>();
+                        measurements[table] = new HashSet<AutoGraphColumn>();
                     }
                     measurements[table].Add(graph);
                 }
@@ -117,7 +124,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
                 columns += pair.Value.Count;
             }
 
-            Log.Info($"- AutoGraph values detected: {columns} ({tables} tables)-");
+            Log.Info($"- AutoGraph values detected: {columns} ({tables} tables) -");
             foreach (var pair in measurements)
             {
                 string table = pair.Key;
