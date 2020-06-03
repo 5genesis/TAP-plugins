@@ -51,8 +51,8 @@ Provides instruments and steps for controlling the [iPerf and Ping Agents](https
 
 ##### Requirements
 
- - [iPerfAgent](https://gitlab.fokus.fraunhofer.de/5genesis/malaga-platform) version 1.0.2
- - [pingAgent](https://gitlab.fokus.fraunhofer.de/5genesis/malaga-platform) version 1.0.1
+ - [iPerfAgent](https://github.com/5genesis/Remote_iPerf_agent) version 1.0.2
+ - [pingAgent](https://github.com/5genesis/Remote_Ping_Agent) version 1.0.1
 
 ### Tap.Plugins.5Genesis.Misc
 
