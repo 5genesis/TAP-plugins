@@ -1,3 +1,12 @@
+**27/04/2020** [Version 2.0.0]
+
+ - Implemented Autograph result listener
+
+**20/04/2020** [Version 1.2.3]
+
+ - Implemented Interval parameter for iPerf and ping agents
+ - Implemented TTL parameter on ping agent
+
 **04/11/2019** [Version 1.2.2]
 
  - Implementation of the Ping Agent plugin (code for the agent can be found in the [malaga-platform](https://gitlab.fokus.fraunhofer.de/5genesis/malaga-platform) repository).

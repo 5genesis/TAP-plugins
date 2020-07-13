@@ -59,6 +59,7 @@ Provides instruments and steps for controlling the [iPerf and Ping Agents](https
  - Provides helper functionality for other plugins.
  - Multi-CSV result listener: This result-listener will create a separate CSV file for each of the generated result kinds, instead of a single, monolithic file as on the original TAP CSV result listener.
  It's also compatible with extra metadata (`ExecutionId` and `_iteration_`).
+ - Autograph result listener (see ELCM documentation: Dashboard auto-generation)
 
 ### Tap.Plugins.5Genesis.Monroe
 
