@@ -56,6 +56,8 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
             result.HttpStatusDescription = reply.StatusDescription;
             result.Content = reply.Content;
 
+            Log.Debug(result.Content);
+
             return result;
         }
 
@@ -87,8 +89,10 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
             PingAgentReply reply = SendRequest("LastJsonResult", Method.GET);
             
             bool errors = checkErrors(reply);
+            ResultTable allResults = errors ? new ResultTable() : reply.ResultTable;
+            ResultTable aggregatedResults = errors ? new ResultTable() : reply.AggregatedResultTable;
 
-            return new Tuple<ResultTable, ResultTable, bool>(reply.ResultTable, reply.AggregatedResultTable, !errors);
+            return new Tuple<ResultTable, ResultTable, bool>(allResults, aggregatedResults, !errors);
         }
 
         public override string GetError()

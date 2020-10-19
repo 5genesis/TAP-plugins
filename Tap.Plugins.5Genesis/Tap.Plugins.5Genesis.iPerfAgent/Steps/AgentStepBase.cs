@@ -141,10 +141,13 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Steps
         protected virtual void measure()
         {
             start();
+            TapThread.Sleep(500);
 
             MeasurementWait();
 
             stop();
+            TapThread.Sleep(1000); // Give some extra time for the result parsing to complete
+
             retrieveResults();
         }
     }

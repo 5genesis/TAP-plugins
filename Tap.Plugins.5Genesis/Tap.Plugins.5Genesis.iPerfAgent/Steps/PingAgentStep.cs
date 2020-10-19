@@ -87,7 +87,7 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Steps
             bool success = reply.Item3;
 
             if (!success) { UpgradeVerdict(VerdictOnError); }
-            else if (resultTable.Rows == 0) { Log.Warning("No iPerf results retrieved"); }
+            else if (resultTable.Rows == 0) { Log.Warning("No ping results retrieved"); }
             else
             {
                 resultTable.PublishToSource(Results);

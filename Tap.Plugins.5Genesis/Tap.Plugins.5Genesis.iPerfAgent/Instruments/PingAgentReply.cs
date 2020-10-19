@@ -61,20 +61,23 @@ namespace Tap.Plugins._5Genesis.RemoteAgents.Instruments
 
                 List<SinglePingResult> results = Result.Count != 0 ? Result[0].IcmpReplies : new List<SinglePingResult>();
 
-                foreach (SinglePingResult result in results)
+                if (results != null)
                 {
-                    if (result.Delay < 0.0) { continue; }
+                    foreach (SinglePingResult result in results)
+                    {
+                        if (result.Delay < 0.0) { continue; }
 
-                    timestamps.Add(result.Timestamp);
-                    datetimes.Add(result.DateTime.ToString());
-                    icmpSeqs.Add(result.IcmpSeq);
+                        timestamps.Add(result.Timestamp);
+                        datetimes.Add(result.DateTime.ToString());
+                        icmpSeqs.Add(result.IcmpSeq);
 
-                    double? delay = result.Delay;
-                    if (delay < 0.0) { delay = null; }
+                        double? delay = result.Delay;
+                        if (delay < 0.0) { delay = null; }
 
-                    delays.Add(delay);
-                    success.Add(delay != null);
-                    duplicated.Add(result.Duplicate);
+                        delays.Add(delay);
+                        success.Add(delay != null);
+                        duplicated.Add(result.Duplicate);
+                    }
                 }
 
                 ResultColumn[] columns = new ResultColumn[] {

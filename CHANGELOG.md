@@ -1,3 +1,7 @@
+**19/10/2020** [Version 2.0.1]
+
+ - Fix timing on result retrieval for agent's measurement step
+
 **27/04/2020** [Version 2.0.0]
 
  - Implemented Autograph result listener
