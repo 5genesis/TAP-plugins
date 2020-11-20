@@ -1,3 +1,7 @@
+**20/11/2020** [Version 2.0.2]
+
+ - Add option for automatically replacing separator character when found within CSV values
+
 **19/10/2020** [Version 2.0.1]
 
  - Fix timing on result retrieval for agent's measurement step

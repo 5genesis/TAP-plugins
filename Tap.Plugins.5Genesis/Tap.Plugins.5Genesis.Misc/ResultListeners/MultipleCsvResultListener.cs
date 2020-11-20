@@ -58,7 +58,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
         private CsvSeparator _separator;
 
         [Display("Replace separator with", Group: "CSV", Order: 1.1,
-            Description: "")]
+            Description: "Replace the separator with this character automatically when found within values")]
         public Enabled<string> SeparatorReplacement { get; set; }
 
         [Display("File Path", Group: "CSV", Order: 1.2,
