@@ -19,5 +19,10 @@ namespace Tap.Plugins._5Genesis.Misc.Enums
                 default: return "\t";
             }
         }
+
+        public static string DefaultReplacement(this CsvSeparator separator)
+        {
+            return separator == CsvSeparator.SemiColon ? "," : ";";
+        }
     }
 }
