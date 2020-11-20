@@ -42,9 +42,26 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
             Group: "CSV",
             Description: "Select which separator to use in the CSV file.",
             Order: 1.0)]
-        public CsvSeparator Separator { get; set; }
+        public CsvSeparator Separator {
+            get { return _separator; }
+            set {
+                if (value != _separator)
+                {
+                    _separator = value;
+                    if (SeparatorReplacement.IsEnabled && SeparatorReplacement.Value.Equals(separator))
+                    {
+                        SeparatorReplacement.Value = _separator.DefaultReplacement();
+                    }
+                }
+            }
+        }
+        private CsvSeparator _separator;
 
-        [Display("File Path", Group: "CSV", Order: 1.1,
+        [Display("Replace separator with", Group: "CSV", Order: 1.1,
+            Description: "Replace the separator with this character automatically when found within values")]
+        public Enabled<string> SeparatorReplacement { get; set; }
+
+        [Display("File Path", Group: "CSV", Order: 1.2,
             Description: "CSV output path. Available macros are:\n" +
                 " - Result type: {ResultType} (Mandatory)\n" +
                 " - Run Identifier: {Identifier} (Mandatory if 'Add Identifier to Results' is enabled)\n" +
@@ -70,6 +87,7 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
             Name = "MultiCSV";
 
             Separator = CsvSeparator.Comma;
+            SeparatorReplacement = new Enabled<string> { IsEnabled = true, Value = ";" };
             FilePath = DEFAULT_FILE_PATH;
             ExecutionId = UNDEFINED;
 
@@ -141,6 +159,11 @@ namespace Tap.Plugins._5Genesis.Misc.ResultListeners
                     // Write the rows of results
                     foreach (List<string> values in result.RowValues)
                     {
+                        if (SeparatorReplacement.IsEnabled)
+                        {
+                            for (int i = 0; i < values.Count; i++) { values[i] = values[i].Replace(separator, SeparatorReplacement.Value); }
+                        }
+
                         writer.WriteLine(string.Join(separator, values));
                     }
                 }
